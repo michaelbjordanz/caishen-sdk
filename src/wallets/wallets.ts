@@ -13,6 +13,11 @@ import { Account, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
 const TonWeb = require('tonweb');
 import Chains from '../constants/chains';
 
+import * as SolanaSwap from '../utils/solana/swap';
+import * as SolanaSend from '../utils/solana/send';
+import * as EthereumSwap from '../utils/ethereum/swap';
+import * as EthereumSend from '../utils/ethereum/send';
+
 const BASE_URL = 'https://build.caishen.xyz';
 
 export class CaishenSDK {
@@ -195,4 +200,20 @@ export class CaishenSDK {
     }
   }
 
+  static solana() {
+    return {
+      swap: (signer: any) => SolanaSwap.swap(signer),
+      send: (signer: any) => SolanaSend.send(signer),
+    };
+  }
+
+  static ethereum() {
+    return {
+      swap: (signer: any) => EthereumSwap.swap(signer),
+      send: (signer: any) => EthereumSend.send(signer),
+    };
+  }
+
 }
+
+export default CaishenSDK;
