@@ -1,0 +1,44 @@
+{
+  "name": "caishen-sdk",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "The Caishen SDK gives every agent or user access to unlimited multi-chain crypto wallets",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "require": {
+      "types": "./dist/index.d.cts",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "tsup src/index.ts --watch",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean --sourcemap --minify"
+  },
+  "author": "CaishenXYZ",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:CaishenXYZ/caishen-sdk.git"
+  },
+  "keywords": ["crypto", "wallet", "sdk", "caishen"],
+  "peerDependencies": {
+    "zod": "3.x"
+  },
+  "dependencies": {
+    "@types/axios": "^0.14.4",
+    "axios": "^1.8.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "terser": "^5.37.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.6.2"
+  }
+}

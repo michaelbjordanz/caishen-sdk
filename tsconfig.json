@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "moduleDetection": "force",
+    "module": "Preserve",
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "skipDefaultLibCheck": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "include": ["src"]
+  }
+}
