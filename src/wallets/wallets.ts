@@ -13,10 +13,16 @@ import { Account, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
 const TonWeb = require('tonweb');
 import Chains from '../constants/chains';
 
-import * as SolanaSwap from '../utils/solana/swap';
-import * as SolanaSend from '../utils/solana/send';
-import * as EthereumSwap from '../utils/ethereum/swap';
-import * as EthereumSend from '../utils/ethereum/send';
+import * as SOLANA from '../utils/solana';
+import * as ETHEREUM from '../utils/ethereum';
+import * as BITCOIN from '../utils/bitcoin';
+import * as SUI from '../utils/sui';
+import * as APTOS from '../utils/aptos';
+import * as TON from '../utils/ton';
+import * as NEAR from '../utils/near';
+import * as TRON from '../utils/tron';
+import * as XRP from '../utils/xrp';
+
 
 const BASE_URL = 'https://build.caishen.xyz';
 
@@ -72,7 +78,7 @@ export class CaishenSDK {
 
   async getWallet(chainType: string, account: number): Promise<any> {
     if (!chainType || account === undefined) {
-      throw new Error('Chain type and account number are required');
+      throw new Error('chainType and account number are required');
     }
     const authToken = this.agentToken || this.userToken;
     if (!authToken) {
@@ -235,15 +241,64 @@ export class CaishenSDK {
 
   static solana() {
     return {
-      swap: (signer: any) => SolanaSwap.swap(signer),
-      send: (signer: any) => SolanaSend.send(signer),
+      swap: (signer: any) => SOLANA.swap(signer),
+      send: (signer: any) => SOLANA.send(signer),
     };
   }
 
   static ethereum() {
     return {
-      swap: (signer: any) => EthereumSwap.swap(signer),
-      send: (signer: any) => EthereumSend.send(signer),
+      swap: (signer: any) => ETHEREUM.swap(signer),
+      send: (signer: any) => ETHEREUM.send(signer),
+    };
+  }
+
+  static bitcoin() {
+    return {
+      swap: (signer: any) => BITCOIN.swap(signer),
+      send: (signer: any) => BITCOIN.send(signer),
+    };
+  }
+
+  static sui() {
+    return {
+      swap: (signer: any) => SUI.swap(signer),
+      send: (signer: any) => SUI.send(signer),
+    };
+  }
+
+  static aptos() {
+    return {
+      swap: (signer: any) => APTOS.swap(signer),
+      send: (signer: any) => APTOS.send(signer),
+    };
+  }
+
+  static ton() {
+    return {
+      swap: (signer: any) => TON.swap(signer),
+      send: (signer: any) => TON.send(signer),
+    };
+  }
+
+  static near() {
+    return {
+      swap: (signer: any) => NEAR.swap(signer),
+      send: (signer: any) => NEAR.send(signer),
+    };
+  }
+
+  static tron() {
+    return {
+      swap: (signer: any) => TRON.swap(signer),
+      send: (signer: any) => TRON.send(signer),
+    };
+  }
+
+  static xrp() {
+    return {
+      swap: (signer: any) => XRP.swap(signer),
+      send: (signer: any) => XRP.send(signer),
     };
   }
 
