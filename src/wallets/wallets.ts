@@ -109,6 +109,24 @@ export class CaishenSDK {
     }
   }
 
+  async getSupportedChainTypes() {
+    try {
+      const authToken = this.agentToken || this.userToken;
+      if (!authToken) {
+        throw new Error('Authenticate as an agent or user before fetching wallets');
+      }
+      const response = await axios.get(
+        `${BASE_URL}/wallets/supported`,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw new Error('Failed to get supported chain types')
+    }
+  }
+
   private async _generateSigner({
     chainType,
     privateKey,
@@ -155,6 +173,21 @@ export class CaishenSDK {
         // Recreate the key pair using the seed
         const keyPair = (tonweb.utils as any).keyPairFromSeed(seed);
         return keyPair;
+      }
+      case 'XRP': {
+        const { deriveKeypair } = require('ripple-keypairs');
+        return deriveKeypair(privateKey);
+      }
+      case 'NEAR': {
+        const { KeyPair } = require('near-api-js');
+        return KeyPair.fromString(privateKey);
+      }
+      case 'TRON': {
+        const TronWeb = require('tronweb');
+        const tronWeb = new TronWeb({
+          fullHost: 'https://api.trongrid.io',
+        });
+        return tronWeb.address.fromPrivateKey(privateKey);
       }
       default:
         return;
