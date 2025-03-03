@@ -22,6 +22,7 @@ import * as TON from '../utils/ton';
 import * as NEAR from '../utils/near';
 import * as TRON from '../utils/tron';
 import * as XRP from '../utils/xrp';
+import * as CARDANO from '../utils/xrp';
 
 
 const BASE_URL = 'https://build.caishen.xyz';
@@ -195,6 +196,15 @@ export class CaishenSDK {
         });
         return tronWeb.address.fromPrivateKey(privateKey);
       }
+      case 'CARDANO': {
+        const CardanoWasm = require('@emurgo/cardano-serialization-lib-nodejs');
+        const entropy = Buffer.from(privateKey, 'hex');
+        const rootKey = CardanoWasm.Bip32PrivateKey.from_bip39_entropy(entropy, Buffer.alloc(0));
+        const accountKey = rootKey.derive(1852 | 0x80000000).derive(1815 | 0x80000000).derive(0 | 0x80000000);
+        const privateKeyHex = Buffer.from(accountKey.as_bytes()).toString('hex');
+        const publicKeyHex = Buffer.from(accountKey.to_public().as_bytes()).toString('hex');
+        return { publicKey: publicKeyHex, privateKey: privateKeyHex };
+      }
       default:
         return;
     }
@@ -301,6 +311,14 @@ export class CaishenSDK {
       send: (signer: any) => XRP.send(signer),
     };
   }
+
+  static cardano() {
+    return {
+      swap: (signer: any) => CARDANO.swap(signer),
+      send: (signer: any) => CARDANO.send(signer),
+    };
+  }
+
 
 }
 
