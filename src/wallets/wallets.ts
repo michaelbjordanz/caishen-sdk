@@ -22,7 +22,7 @@ import * as TON from '../utils/ton';
 import * as NEAR from '../utils/near';
 import * as TRON from '../utils/tron';
 import * as XRP from '../utils/xrp';
-import * as CARDANO from '../utils/xrp';
+import * as CARDANO from '../utils/cardano';
 
 
 const BASE_URL = 'https://build.caishen.xyz';
