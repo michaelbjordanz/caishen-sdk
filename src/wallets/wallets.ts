@@ -12,7 +12,7 @@ import { Wallet, ethers } from 'ethers';
 import { Account, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
 const TonWeb = require('tonweb');
 import Chains from '../constants/chains';
-
+import { SUPPORTED_CHAINS } from '../constants/app';
 import * as SOLANA from '../utils/solana';
 import * as ETHEREUM from '../utils/ethereum';
 import * as BITCOIN from '../utils/bitcoin';
@@ -24,6 +24,18 @@ import * as TRON from '../utils/tron';
 import * as XRP from '../utils/xrp';
 import * as CARDANO from '../utils/cardano';
 
+const MODULES: Record<string, any> = {
+  BITCOIN,
+  ETHEREUM,
+  SOLANA,
+  SUI,
+  APTOS,
+  TON,
+  NEAR,
+  TRON,
+  XRP,
+  CARDANO,
+};
 
 const BASE_URL = 'https://build.caishen.xyz';
 
@@ -34,14 +46,20 @@ export class CaishenSDK {
   private userToken: string | null = null;
   private connectedAs: 'agent' | 'user' | null = null;
 
-  constructor(projectKey: string) {
+  constructor({ projectKey }: { projectKey: string }) {
     if (!projectKey) {
       throw new Error('Project key is required');
     }
     this.projectKey = projectKey;
   }
 
-  async connectAsAgent(agentId?: string, userId?: string): Promise<string> {
+  async connectAsAgent({
+    agentId,
+    userId,
+  }: {
+    agentId?: string;
+    userId?: string;
+  }): Promise<string> {
     if (this.connectedAs) {
       throw new Error('Already connected as a user or agent. Create a new instance to connect again.');
     }
@@ -59,7 +77,13 @@ export class CaishenSDK {
     }
   }
 
-  async connectAsUser(provider: string, token: string): Promise<string> {
+  async connectAsUser({
+    provider, 
+    token
+  }: {
+    provider: string;
+    token: string;
+  }): Promise<string> {
     if (this.connectedAs) {
       throw new Error('Already connected as a user or agent. Create a new instance to connect again.');
     }
@@ -77,7 +101,13 @@ export class CaishenSDK {
     }
   }
 
-  async getWallet(chainType: string, account: number): Promise<any> {
+  async getWalletRaw({
+    chainType, 
+    account
+  }: {
+    chainType: string;
+    account: number;
+  }): Promise<any> {
     if (!chainType || account === undefined) {
       throw new Error('chainType and account number are required');
     }
@@ -87,7 +117,7 @@ export class CaishenSDK {
     }
     try {
       const response = await axios.get(
-        `${BASE_URL}/wallets`,
+        `${BASE_URL}/api/wallets`,
         {
           params: { chainType, account },
           headers: { Authorization: `Bearer ${authToken}` },
@@ -99,9 +129,17 @@ export class CaishenSDK {
     }
   }
 
-  async getWalletSigner(chainType: string, account: number, chainId?: string): Promise<any> {
+  async getWalletSigner({
+    chainType, 
+    account, 
+    chainId
+  }: {
+    chainType: string;
+    account: number;
+    chainId?: number;
+  }): Promise<any> {
     try {
-      const wallet = await this.getWallet(chainType, account);
+      const wallet = await this.getWalletRaw({ chainType, account });
       if (!wallet || !wallet.privateKey) {
         throw new Error('Invalid wallet data');
       }
@@ -116,6 +154,19 @@ export class CaishenSDK {
     }
   }
 
+  async getWalletModule({
+    chainType, 
+    account, 
+    chainId
+  }: {
+    chainType: string;
+    account: number;
+    chainId?: number;
+  }) {
+    const signer = await this.getWalletSigner({ chainType, account, chainId });
+    return CaishenSDK.useChain({ chainType, signer });
+  }
+
   async getSupportedChainTypes() {
     try {
       const authToken = this.agentToken || this.userToken;
@@ -123,7 +174,7 @@ export class CaishenSDK {
         throw new Error('Authenticate as an agent or user before fetching wallets');
       }
       const response = await axios.get(
-        `${BASE_URL}/wallets/supported`,
+        `${BASE_URL}/api/wallets/supported`,
         {
           headers: { Authorization: `Bearer ${authToken}` },
         }
@@ -141,7 +192,7 @@ export class CaishenSDK {
   }: {
     chainType: string;
     privateKey: string;
-    chainId?: any;
+    chainId?: number;
   }) {
     switch (chainType) {
       case 'SOLANA': {
@@ -249,76 +300,47 @@ export class CaishenSDK {
     }
   }
 
-  static solana() {
-    return {
-      swap: (signer: any) => SOLANA.swap(signer),
-      send: (signer: any) => SOLANA.send(signer),
-    };
+  static updateNetwork({
+    module, 
+    customRpc
+  }: {
+    module: any;
+    customRpc: string;
+  }) {
+    if (!module || !customRpc) {
+      throw new Error('Module and custom RPC URL are required');
+    }
+    if (!module.signer || !module.signer.provider) {
+      throw new Error('Invalid Ethereum module or signer');
+    }
+    module.signer = new Wallet(module.signer.privateKey, new ethers.providers.JsonRpcProvider(customRpc));
+    return module;
   }
 
-  static ethereum() {
-    return {
-      swap: (signer: any) => ETHEREUM.swap(signer),
-      send: (signer: any) => ETHEREUM.send(signer),
-    };
-  }
+  static useChain({ 
+    chainType, 
+    signer
+  }: {
+    chainType: string;
+    signer: any;
+  }) {
+    if (!signer) throw new Error('Signer is required');
+    if (!SUPPORTED_CHAINS.includes(chainType.toUpperCase())) {
+      throw new Error(`Unsupported chain: ${chainType}`);
+    }
+    
+    const module = MODULES[chainType.toUpperCase()];
+    if (!module) {
+      throw new Error(`No module found for chain: ${chainType}`);
+    }
 
-  static bitcoin() {
-    return {
-      swap: (signer: any) => BITCOIN.swap(signer),
-      send: (signer: any) => BITCOIN.send(signer),
-    };
+    return Object.keys(module).reduce((acc, key) => {
+      if (typeof module[key] === 'function') {
+        acc[key] = (...args: any[]) => module[key](signer, ...args);
+      }
+      return acc;
+    }, { signer } as Record<string, (...args: any[]) => any>);
   }
-
-  static sui() {
-    return {
-      swap: (signer: any) => SUI.swap(signer),
-      send: (signer: any) => SUI.send(signer),
-    };
-  }
-
-  static aptos() {
-    return {
-      swap: (signer: any) => APTOS.swap(signer),
-      send: (signer: any) => APTOS.send(signer),
-    };
-  }
-
-  static ton() {
-    return {
-      swap: (signer: any) => TON.swap(signer),
-      send: (signer: any) => TON.send(signer),
-    };
-  }
-
-  static near() {
-    return {
-      swap: (signer: any) => NEAR.swap(signer),
-      send: (signer: any) => NEAR.send(signer),
-    };
-  }
-
-  static tron() {
-    return {
-      swap: (signer: any) => TRON.swap(signer),
-      send: (signer: any) => TRON.send(signer),
-    };
-  }
-
-  static xrp() {
-    return {
-      swap: (signer: any) => XRP.swap(signer),
-      send: (signer: any) => XRP.send(signer),
-    };
-  }
-
-  static cardano() {
-    return {
-      swap: (signer: any) => CARDANO.swap(signer),
-      send: (signer: any) => CARDANO.send(signer),
-    };
-  }
-
 
 }
 
