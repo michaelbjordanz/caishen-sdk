@@ -1,3 +1,5 @@
+import ChainIds from './chain-ids'
+
 export const SUPPORTED_CHAINS = [
 	'BITCOIN',
 	'ETHEREUM',
@@ -24,4 +26,11 @@ export enum ChainType {
   TRON = 'TRON',
   XRP = 'XRP',
   CARDANO = 'CARDANO'
+}
+
+export interface IWalletAccount {
+  chainType: string; 
+  account: number;
+  chainId?: ChainIds
+  rpc?: string;
 }
