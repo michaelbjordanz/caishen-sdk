@@ -12,32 +12,17 @@ import { Wallet, ethers } from 'ethers';
 import { Account, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
 const TonWeb = require('tonweb');
 import Chains from '../constants/chains';
-import { SUPPORTED_CHAINS } from '../constants/app';
-import * as SOLANA from '../utils/solana';
-import * as ETHEREUM from '../utils/ethereum';
-import * as BITCOIN from '../utils/bitcoin';
-import * as SUI from '../utils/sui';
-import * as APTOS from '../utils/aptos';
-import * as TON from '../utils/ton';
-import * as NEAR from '../utils/near';
-import * as TRON from '../utils/tron';
-import * as XRP from '../utils/xrp';
-import * as CARDANO from '../utils/cardano';
+import { SUPPORTED_CHAINS, BASE_URL } from '../constants';
+import PublicRpcEndpoints from '../constants/public-rpc-endpoints';
+import ChainIds from '../constants/chain-ids';
+
+import * as CASH from '../cash';
+import * as CRYPTO from '../crypto';
 
 const MODULES: Record<string, any> = {
-  BITCOIN,
-  ETHEREUM,
-  SOLANA,
-  SUI,
-  APTOS,
-  TON,
-  NEAR,
-  TRON,
-  XRP,
-  CARDANO,
+  CASH,
+  CRYPTO
 };
-
-const BASE_URL = 'https://build.caishen.xyz';
 
 export class CaishenSDK {
   
@@ -51,6 +36,28 @@ export class CaishenSDK {
       throw new Error('Project key is required');
     }
     this.projectKey = projectKey;
+
+    // init all util modules
+    this.initializeModules();
+  }
+
+  private initializeModules() {
+    for (const chain of SUPPORTED_CHAINS) {
+      const chainKey = chain.toUpperCase();
+      if (MODULES[chainKey]) {
+        (this as any)[chain.toLowerCase()] = this.bindModule(MODULES[chainKey]);
+      }
+    }
+  }
+
+  private bindModule(module: any) {
+    const boundModule: any = {};
+    for (const key of Object.keys(module)) {
+      if (typeof module[key] === "function") {
+        boundModule[key] = module[key].bind(this); // Bind SDK context to the function
+      }
+    }
+    return boundModule;
   }
 
   async connectAsAgent({
@@ -132,11 +139,11 @@ export class CaishenSDK {
   async getWalletSigner({
     chainType, 
     account, 
-    chainId
+    rpc
   }: {
     chainType: string;
     account: number;
-    chainId?: number;
+    rpc?: string;
   }): Promise<any> {
     try {
       const wallet = await this.getWalletRaw({ chainType, account });
@@ -146,25 +153,12 @@ export class CaishenSDK {
       const signer = await this._generateSigner({
         chainType,
         privateKey: wallet.privateKey,
-        chainId,
+        rpc,
       });
       return signer;
     } catch (error: any) {
       throw new Error(`Failed to get wallet signer: ${error.response?.data?.message || error.message}`);
     }
-  }
-
-  async getWalletModule({
-    chainType, 
-    account, 
-    chainId
-  }: {
-    chainType: string;
-    account: number;
-    chainId?: number;
-  }) {
-    const signer = await this.getWalletSigner({ chainType, account, chainId });
-    return CaishenSDK.useChain({ chainType, signer });
   }
 
   async getSupportedChainTypes() {
@@ -185,14 +179,21 @@ export class CaishenSDK {
     }
   }
 
+  async getRPC(chainId: ChainIds) {
+    if (!PublicRpcEndpoints[chainId]) {
+      throw new Error(`RPC for ${chainId} not supported`);
+    }
+    return PublicRpcEndpoints[chainId];
+  }
+
   private async _generateSigner({
     chainType,
     privateKey,
-    chainId,
+    rpc,
   }: {
     chainType: string;
     privateKey: string;
-    chainId?: number;
+    rpc?: string;
   }) {
     switch (chainType) {
       case 'SOLANA': {
@@ -208,7 +209,7 @@ export class CaishenSDK {
         return keypair;
       }
       case 'ETHEREUM': {
-        return this.generateETHWallet(privateKey, chainId);
+        return this.generateETHWallet(privateKey, rpc);
       }
       case 'APTOS': {
         // Remove the '0x' prefix if it exists
@@ -261,15 +262,9 @@ export class CaishenSDK {
     }
   }
 
-  private generateETHWallet(pk: string, chainId?: number) {
-    const evmChain = Chains[chainId ?? 1];
-
-    if (!evmChain) {
-      throw new Error(`Not evm chain id = ${chainId}`);
-    }
-
+  private generateETHWallet(pk: string, rpc?: string) {
     const defaultProvider = new ethers.providers.JsonRpcProvider(
-      Chains[chainId ?? 1].publicRpc,
+      rpc ?? Chains[1].publicRpc,
     );
     return new Wallet(pk, defaultProvider);
   }
@@ -298,48 +293,6 @@ export class CaishenSDK {
       }
       throw new Error('Failed to generate Bitcoin wallet: Unknown error occurred');
     }
-  }
-
-  static updateNetwork({
-    module, 
-    customRpc
-  }: {
-    module: any;
-    customRpc: string;
-  }) {
-    if (!module || !customRpc) {
-      throw new Error('Module and custom RPC URL are required');
-    }
-    if (!module.signer || !module.signer.provider) {
-      throw new Error('Invalid Ethereum module or signer');
-    }
-    module.signer = new Wallet(module.signer.privateKey, new ethers.providers.JsonRpcProvider(customRpc));
-    return module;
-  }
-
-  static useChain({ 
-    chainType, 
-    signer
-  }: {
-    chainType: string;
-    signer: any;
-  }) {
-    if (!signer) throw new Error('Signer is required');
-    if (!SUPPORTED_CHAINS.includes(chainType.toUpperCase())) {
-      throw new Error(`Unsupported chain: ${chainType}`);
-    }
-    
-    const module = MODULES[chainType.toUpperCase()];
-    if (!module) {
-      throw new Error(`No module found for chain: ${chainType}`);
-    }
-
-    return Object.keys(module).reduce((acc, key) => {
-      if (typeof module[key] === 'function') {
-        acc[key] = (...args: any[]) => module[key](signer, ...args);
-      }
-      return acc;
-    }, { signer } as Record<string, (...args: any[]) => any>);
   }
 
 }

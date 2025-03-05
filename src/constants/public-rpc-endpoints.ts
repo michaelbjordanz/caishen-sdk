@@ -1,6 +1,6 @@
 import ChainIds from './chain-ids';
 
-const PublicRpcEndpoints = {
+const PublicRpcEndpoints: any = {
   [ChainIds.MAINNET]: 'https://rpc.ankr.com/eth',
   [ChainIds.SMART_CHAIN]: 'https://bsc-dataseed.binance.org/',
   [ChainIds.MATIC]: 'https://polygon-rpc.com/',

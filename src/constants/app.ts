@@ -11,6 +11,8 @@ export const SUPPORTED_CHAINS = [
   'CARDANO'
 ]
 
+export const BASE_URL = 'https://build.caishen.xyz';
+
 export enum ChainType {
   BITCOIN = 'BITCOIN',
   SOLANA = 'SOLANA',
