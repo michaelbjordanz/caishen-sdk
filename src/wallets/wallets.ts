@@ -15,6 +15,9 @@ import Chains from '../constants/chains';
 import { SUPPORTED_CHAINS, BASE_URL } from '../constants';
 import PublicRpcEndpoints from '../constants/public-rpc-endpoints';
 import ChainIds from '../constants/chain-ids';
+const { Secp256k1Wallet } = require('@cosmjs/amino');
+const { DirectSecp256k1Wallet } = require('@cosmjs/proto-signing');
+const { stringToPath } = require('@cosmjs/crypto');
 
 import * as CASH from '../cash';
 import * as CRYPTO from '../crypto';
@@ -139,21 +142,24 @@ export class CaishenSDK {
   async getWalletSigner({
     chainType, 
     account, 
-    rpc
+    rpc,
+    chainId
   }: {
     chainType: string;
     account: number;
     rpc?: string;
+    chainId?: ChainIds;
   }): Promise<any> {
     try {
       const wallet = await this.getWalletRaw({ chainType, account });
       if (!wallet || !wallet.privateKey) {
         throw new Error('Invalid wallet data');
       }
+      const _rpc: string | undefined = rpc ?? (chainId !== undefined ? Chains[chainId]?.publicRpc : undefined);
       const signer = await this._generateSigner({
         chainType,
         privateKey: wallet.privateKey,
-        rpc,
+        rpc: _rpc
       });
       return signer;
     } catch (error: any) {
@@ -257,8 +263,12 @@ export class CaishenSDK {
         const publicKeyHex = Buffer.from(accountKey.to_public().as_bytes()).toString('hex');
         return { publicKey: publicKeyHex, privateKey: privateKeyHex };
       }
-      default:
+      case 'COSMOS': {
+        return this.generateCosmosSigner(privateKey);
+      }
+      default: {
         return;
+      }
     }
   }
 
@@ -295,6 +305,10 @@ export class CaishenSDK {
     }
   }
 
-}
+  private async generateCosmosSigner(privateKey: string) {
+    const privateKeyBuffer = Buffer.from(privateKey, 'hex');
+    const wallet = await DirectSecp256k1Wallet.fromKey(privateKeyBuffer, 'cosmos');
+    return wallet;
+  }
 
-export default CaishenSDK;
+}

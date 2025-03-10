@@ -10,7 +10,8 @@ export const SUPPORTED_CHAINS = [
   'NEAR',
   'TRON',
   'XRP',
-  'CARDANO'
+  'CARDANO',
+  'COSMOS'
 ]
 
 export const BASE_URL = 'https://build.caishen.xyz';
@@ -25,7 +26,8 @@ export enum ChainType {
   NEAR = 'NEAR',
   TRON = 'TRON',
   XRP = 'XRP',
-  CARDANO = 'CARDANO'
+  CARDANO = 'CARDANO',
+  COSMOS = 'COSMOS'
 }
 
 export interface IWalletAccount {

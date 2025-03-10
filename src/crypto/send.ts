@@ -18,8 +18,9 @@ export async function send(this: any, {
 
   try {
     const authToken = this.userToken || this.agentToken;
+    const url = `${BASE_URL}/api/crypto/send`;
     const response = await axios.post(
-      `${BASE_URL}/api/crypto/send`,
+      url,
       {
         wallet,
         payload
@@ -47,7 +48,7 @@ export async function getBalance(this: any, {
   wallet: IWalletAccount,
   payload: { token?: string }
 }) {
-
+  const url = `${BASE_URL}/api/crypto/balance`;
 }
 
 /*
@@ -58,5 +59,5 @@ export async function getTokenBalances(this: any, {
 }: {
   wallet: IWalletAccount,
 }) {
-
+  const url = `${BASE_URL}/api/crypto/balances`;
 }
