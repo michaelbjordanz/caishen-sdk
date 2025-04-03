@@ -13,8 +13,8 @@ export async function get_balance(
   ): Promise<any> 
 {
   try {
-    const response = await axios.get<{ agentToken: string }>(
-      `${BASE_URL}/api/crypto/balance`,
+    const response = await axios.get<{ balance: string }>(
+      `${BASE_URL}/crypto/balance`,
       { 
         params: {
           account: info.account,
@@ -41,8 +41,8 @@ export async function get_balance_other(
   ): Promise<any> 
 {
   try {
-    const response = await axios.get<{ agentToken: string }>(
-      `${BASE_URL}/api/crypto/balance_other`,
+    const response = await axios.get<{ balance: string }>(
+      `${BASE_URL}/crypto/balance_other`,
       { 
         params: {
           account: info.account,
@@ -70,7 +70,7 @@ export async function transfer(
   ): Promise<string> {
     try {
       const response = await axios.post<{ transaction: string }>(
-        `${BASE_URL}/api/crypto/balance_other`,
+        `${BASE_URL}/crypto/send`,
         {
           wallet: {
             account: info.account,
