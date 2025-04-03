@@ -1,4 +1,4 @@
 import { CaishenSDK } from './caishen';
-import { createAgentTools } from './agents/agents';
+import { createAgentTools } from './langchain'
 
 export { CaishenSDK, createAgentTools };

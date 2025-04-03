@@ -1,8 +1,13 @@
 import axios from "axios";
-import { BASE_URL } from "./constants";
+import { BASE_URL, BalanceOption, TransferOption } from "./constants";
 
 import * as CASH from "./cash";
 import * as CRYPTO from "./crypto";
+import { 
+  get_balance,
+  get_balance_other,
+  transfer
+ } from "./agents";
 
 export class CaishenSDK {
 
@@ -100,5 +105,18 @@ export class CaishenSDK {
         }`
       );
     }
+  }
+
+  async getBalance(info: BalanceOption): Promise<number> {
+    return get_balance(this.agentToken, info);
+  }
+
+  async getBalanceOther(info: BalanceOption): Promise<number> {
+    return get_balance_other(this.agentToken, info);
+  }
+
+
+  async transfer(info: TransferOption): Promise<string> {
+    return transfer(this.agentToken, info);
   }
 }
