@@ -14,7 +14,7 @@ export const SUPPORTED_CHAINS = [
   'COSMOS'
 ]
 
-export const BASE_URL = 'https://build.caishen.xyz';
+export const BASE_URL = 'http://localhost:8080' //'https://build.caishen.xyz';
 
 export enum ChainType {
   BITCOIN = 'BITCOIN',
@@ -35,21 +35,4 @@ export interface IWalletAccount {
   account: number;
   chainId?: ChainIds
   rpc?: string;
-}
-
-export interface BalanceOption {
-  account: string;
-  chainType: number;
-  chainId: ChainIds;
-  walletAddress?: string;
-  tokenAddress: string;
-}
-
-export interface TransferOption {
-  account: string;
-  chainType: number;
-  rpc?: string;
-  token?: string;
-  amount: string;
-  toAddress: string;
 }

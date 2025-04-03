@@ -48,7 +48,29 @@ export async function getBalance(this: any, {
   wallet: IWalletAccount,
   payload: { token?: string }
 }) {
-  const url = `${BASE_URL}/api/crypto/balance`;
+  if (!this.userToken && !this.agentToken) {
+    throw new Error('Authentication required. Connect as user or agent first.');
+  }
+
+  try {
+    const authToken = this.userToken || this.agentToken;
+    const url = `${BASE_URL}/api/crypto/balance`;
+    const response = await axios.get(
+      url,
+      {
+        params: {
+          ...wallet,
+          tokenAddress: payload.token
+        },
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error("Failed to get balance");
+  }
 }
 
 /*

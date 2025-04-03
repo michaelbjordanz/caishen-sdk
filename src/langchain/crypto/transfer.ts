@@ -1,6 +1,5 @@
 import { Tool } from "langchain/tools";
 import { CaishenSDK } from '../../caishen';
-import { TransferOption } from "../../constants";
 
 export class CaishenTransferTool extends Tool {
     name = "crypto_transfer";
@@ -14,17 +13,19 @@ export class CaishenTransferTool extends Tool {
       try {
         const parsedInput = JSON.parse(input);
   
-        // Prepare transfer options
-        const transferOptions: TransferOption = {
-          account: parsedInput.account,
-          chainType: parsedInput.chainType,
-          rpc: parsedInput.rpc,
-          token: parsedInput.token,
-          amount: parsedInput.amount,
-          toAddress: parsedInput.toAddress,
-        };
-        const tx = await this.sdk.transfer(transferOptions);
-  
+        const tx = await this.sdk.crypto.send({
+          wallet: {
+            account: parsedInput.account,
+            chainType: parsedInput.chainType,
+            rpc: parsedInput.rpc,
+          },
+          payload: {
+            token: parsedInput.token,
+            amount: parsedInput.amount,
+            toAddress: parsedInput.toAddress
+          }
+        });
+
         return JSON.stringify({
           status: "success",
           message: "Transfer completed successfully",

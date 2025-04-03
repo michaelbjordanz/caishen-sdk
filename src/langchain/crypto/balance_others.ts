@@ -1,5 +1,4 @@
 import { Tool } from "langchain/tools";
-import { BalanceOption } from "../../constants";
 import { CaishenSDK } from '../../caishen';
 
 export class CaishenBalanceOtherTool extends Tool {
@@ -14,16 +13,14 @@ export class CaishenBalanceOtherTool extends Tool {
     try {
       const parsedInput = JSON.parse(input);
 
-      // Prepare balance options
-      const balanceOptions: BalanceOption = {
-        account: parsedInput.account,
-        chainType: parsedInput.chainType,
-        chainId: parsedInput.chainId,
-        walletAddress: parsedInput.walletAddress,
-        tokenAddress: parsedInput.tokenAddress,
-      };
-
-      const balance = await this.sdk.getBalanceOther(balanceOptions);
+      const balance = await this.sdk.crypto.getBalance({
+        wallet: {
+          chainType: parsedInput.chainType,
+          account: parsedInput.account,
+          chainId: parsedInput.chainId
+        },
+        payload: { token: parsedInput.tokenAddress }
+      });
 
       return JSON.stringify({
         status: "success",
