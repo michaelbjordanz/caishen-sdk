@@ -1,42 +1,40 @@
-import axios from 'axios';
-import { Keypair } from '@solana/web3.js';
-const crypto = require('crypto');
-import * as bs58 from 'bs58';
-const nacl = require('tweetnacl');
-import * as bitcoin from 'bitcoinjs-lib';
-import type { ECPairAPI } from 'ecpair';
-import ECPairFactory from 'ecpair';
-import * as tinysecp from 'tiny-secp256k1';
-import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
-import { Wallet, ethers } from 'ethers';
 import { Account, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
-const TonWeb = require('tonweb');
-import Chains from '../constants/chains';
-import { SUPPORTED_CHAINS, BASE_URL } from '../constants';
-import PublicRpcEndpoints from '../constants/public-rpc-endpoints';
-import ChainIds from '../constants/chain-ids';
-const { Secp256k1Wallet } = require('@cosmjs/amino');
-const { DirectSecp256k1Wallet } = require('@cosmjs/proto-signing');
-const { stringToPath } = require('@cosmjs/crypto');
+import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
+import { Keypair } from "@solana/web3.js";
+import axios from "axios";
+import * as bitcoin from "bitcoinjs-lib";
+import type { ECPairAPI } from "ecpair";
+import ECPairFactory from "ecpair";
+import { Wallet, ethers } from "ethers";
+import * as tinysecp from "tiny-secp256k1";
+import { BASE_URL, SUPPORTED_CHAINS } from "../constants";
+import ChainIds from "../constants/chain-ids";
+import Chains from "../constants/chains";
+import PublicRpcEndpoints from "../constants/public-rpc-endpoints";
+const crypto = require("crypto");
+const nacl = require("tweetnacl");
+const TonWeb = require("tonweb");
+const { Secp256k1Wallet } = require("@cosmjs/amino");
+const { DirectSecp256k1Wallet } = require("@cosmjs/proto-signing");
+const { stringToPath } = require("@cosmjs/crypto");
 
-import * as CASH from '../cash';
-import * as CRYPTO from '../crypto';
+import * as CASH from "../cash";
+import * as CRYPTO from "../crypto";
 
 const MODULES: Record<string, any> = {
   CASH,
-  CRYPTO
+  CRYPTO,
 };
 
 export class CaishenSDK {
-  
   private projectKey: string;
   private agentToken: string | null = null;
   private userToken: string | null = null;
-  private connectedAs: 'agent' | 'user' | null = null;
+  private connectedAs: "agent" | "user" | null = null;
 
   constructor({ projectKey }: { projectKey: string }) {
     if (!projectKey) {
-      throw new Error('Project key is required');
+      throw new Error("Project key is required");
     }
     this.projectKey = projectKey;
 
@@ -71,7 +69,9 @@ export class CaishenSDK {
     userId?: string;
   }): Promise<string> {
     if (this.connectedAs) {
-      throw new Error('Already connected as a user or agent. Create a new instance to connect again.');
+      throw new Error(
+        "Already connected as a user or agent. Create a new instance to connect again."
+      );
     }
     try {
       const response = await axios.post<{ agentToken: string }>(
@@ -80,22 +80,28 @@ export class CaishenSDK {
         { headers: { projectKey: this.projectKey } }
       );
       this.agentToken = response.data.agentToken;
-      this.connectedAs = 'agent';
+      this.connectedAs = "agent";
       return this.agentToken;
     } catch (error: any) {
-      throw new Error(`Agent authentication failed: ${error.response?.data?.message || error.message}`);
+      throw new Error(
+        `Agent authentication failed: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
   }
 
   async connectAsUser({
-    provider, 
-    token
+    provider,
+    token,
   }: {
     provider: string;
     token: string;
   }): Promise<string> {
     if (this.connectedAs) {
-      throw new Error('Already connected as a user or agent. Create a new instance to connect again.');
+      throw new Error(
+        "Already connected as a user or agent. Create a new instance to connect again."
+      );
     }
     try {
       const response = await axios.post<{ userToken: string }>(
@@ -104,46 +110,53 @@ export class CaishenSDK {
         { headers: { projectKey: this.projectKey } }
       );
       this.userToken = response.data.userToken;
-      this.connectedAs = 'user';
+      this.connectedAs = "user";
       return this.userToken;
     } catch (error: any) {
-      throw new Error(`User authentication failed: ${error.response?.data?.message || error.message}`);
+      throw new Error(
+        `User authentication failed: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
   }
 
   async getWalletRaw({
-    chainType, 
-    account
+    chainType,
+    account,
   }: {
     chainType: string;
     account: number;
   }): Promise<any> {
     if (!chainType || account === undefined) {
-      throw new Error('chainType and account number are required');
+      throw new Error("chainType and account number are required");
     }
     const authToken = this.agentToken || this.userToken;
     if (!authToken) {
-      throw new Error('Authenticate as an agent or user before fetching wallets');
+      throw new Error(
+        "Authenticate as an agent or user before fetching wallets"
+      );
     }
     try {
-      const response = await axios.get(
-        `${BASE_URL}/api/wallets`,
-        {
-          params: { chainType, account },
-          headers: { Authorization: `Bearer ${authToken}` },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/api/wallets`, {
+        params: { chainType, account },
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
       return response.data;
     } catch (error: any) {
-      throw new Error(`Failed to get wallet: ${error.response?.data?.message || error.message}`);
+      throw new Error(
+        `Failed to get wallet: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
   }
 
   async getWalletSigner({
-    chainType, 
-    account, 
+    chainType,
+    account,
     rpc,
-    chainId
+    chainId,
   }: {
     chainType: string;
     account: number;
@@ -153,17 +166,22 @@ export class CaishenSDK {
     try {
       const wallet = await this.getWalletRaw({ chainType, account });
       if (!wallet || !wallet.privateKey) {
-        throw new Error('Invalid wallet data');
+        throw new Error("Invalid wallet data");
       }
-      const _rpc: string | undefined = rpc ?? (chainId !== undefined ? Chains[chainId]?.publicRpc : undefined);
+      const _rpc: string | undefined =
+        rpc ?? (chainId !== undefined ? Chains[chainId]?.publicRpc : undefined);
       const signer = await this._generateSigner({
         chainType,
         privateKey: wallet.privateKey,
-        rpc: _rpc
+        rpc: _rpc,
       });
       return signer;
     } catch (error: any) {
-      throw new Error(`Failed to get wallet signer: ${error.response?.data?.message || error.message}`);
+      throw new Error(
+        `Failed to get wallet signer: ${
+          error.response?.data?.message || error.message
+        }`
+      );
     }
   }
 
@@ -171,17 +189,16 @@ export class CaishenSDK {
     try {
       const authToken = this.agentToken || this.userToken;
       if (!authToken) {
-        throw new Error('Authenticate as an agent or user before fetching wallets');
+        throw new Error(
+          "Authenticate as an agent or user before fetching wallets"
+        );
       }
-      const response = await axios.get(
-        `${BASE_URL}/api/wallets/supported`,
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/api/wallets/supported`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
       return response.data;
     } catch (err) {
-      throw new Error('Failed to get supported chain types')
+      throw new Error("Failed to get supported chain types");
     }
   }
 
@@ -202,33 +219,33 @@ export class CaishenSDK {
     rpc?: string;
   }) {
     switch (chainType) {
-      case 'SOLANA': {
-        const privateKeyBytes = Buffer.from(privateKey, 'hex');
+      case "SOLANA": {
+        const privateKeyBytes = Buffer.from(privateKey, "hex");
         const keypair = Keypair.fromSecretKey(privateKeyBytes);
         return keypair;
       }
-      case 'BITCOIN': {
+      case "BITCOIN": {
         return this.generateBitcoinWallet(privateKey);
       }
-      case 'SUI': {
+      case "SUI": {
         const keypair = Ed25519Keypair.fromSecretKey(privateKey);
         return keypair;
       }
-      case 'ETHEREUM': {
+      case "ETHEREUM": {
         return this.generateETHWallet(privateKey, rpc);
       }
-      case 'APTOS': {
+      case "APTOS": {
         // Remove the '0x' prefix if it exists
-        const cleanedPrivateKey = privateKey.startsWith('0x')
+        const cleanedPrivateKey = privateKey.startsWith("0x")
           ? privateKey.slice(2)
           : privateKey;
         // Convert the private key string back into a Buffer
-        const privateKeyBuffer: any = Buffer.from(cleanedPrivateKey, 'hex');
+        const privateKeyBuffer: any = Buffer.from(cleanedPrivateKey, "hex");
         const _p = new Ed25519PrivateKey(privateKeyBuffer);
         const account = await Account.fromPrivateKey({ privateKey: _p });
         return account;
       }
-      case 'TON': {
+      case "TON": {
         // Initialize TonWeb instance
         const tonweb = new TonWeb();
         // Convert the private key from hex to a Uint8Array
@@ -239,31 +256,41 @@ export class CaishenSDK {
         const keyPair = (tonweb.utils as any).keyPairFromSeed(seed);
         return keyPair;
       }
-      case 'XRP': {
-        const { deriveKeypair } = require('ripple-keypairs');
+      case "XRP": {
+        const { deriveKeypair } = require("ripple-keypairs");
         return deriveKeypair(privateKey);
       }
-      case 'NEAR': {
-        const { KeyPair } = require('near-api-js');
+      case "NEAR": {
+        const { KeyPair } = require("near-api-js");
         return KeyPair.fromString(privateKey);
       }
-      case 'TRON': {
-        const TronWeb = require('tronweb');
+      case "TRON": {
+        const TronWeb = require("tronweb");
         const tronWeb = new TronWeb({
-          fullHost: 'https://api.trongrid.io',
+          fullHost: "https://api.trongrid.io",
         });
         return tronWeb.address.fromPrivateKey(privateKey);
       }
-      case 'CARDANO': {
-        const CardanoWasm = require('@emurgo/cardano-serialization-lib-nodejs');
-        const entropy = Buffer.from(privateKey, 'hex');
-        const rootKey = CardanoWasm.Bip32PrivateKey.from_bip39_entropy(entropy, Buffer.alloc(0));
-        const accountKey = rootKey.derive(1852 | 0x80000000).derive(1815 | 0x80000000).derive(0 | 0x80000000);
-        const privateKeyHex = Buffer.from(accountKey.as_bytes()).toString('hex');
-        const publicKeyHex = Buffer.from(accountKey.to_public().as_bytes()).toString('hex');
+      case "CARDANO": {
+        const CardanoWasm = require("@emurgo/cardano-serialization-lib-nodejs");
+        const entropy = Buffer.from(privateKey, "hex");
+        const rootKey = CardanoWasm.Bip32PrivateKey.from_bip39_entropy(
+          entropy,
+          Buffer.alloc(0)
+        );
+        const accountKey = rootKey
+          .derive(1852 | 0x80000000)
+          .derive(1815 | 0x80000000)
+          .derive(0 | 0x80000000);
+        const privateKeyHex = Buffer.from(accountKey.as_bytes()).toString(
+          "hex"
+        );
+        const publicKeyHex = Buffer.from(
+          accountKey.to_public().as_bytes()
+        ).toString("hex");
         return { publicKey: publicKeyHex, privateKey: privateKeyHex };
       }
-      case 'COSMOS': {
+      case "COSMOS": {
         return this.generateCosmosSigner(privateKey);
       }
       default: {
@@ -274,7 +301,7 @@ export class CaishenSDK {
 
   private generateETHWallet(pk: string, rpc?: string) {
     const defaultProvider = new ethers.providers.JsonRpcProvider(
-      rpc ?? Chains[1].publicRpc,
+      rpc ?? Chains[1].publicRpc
     );
     return new Wallet(pk, defaultProvider);
   }
@@ -291,24 +318,31 @@ export class CaishenSDK {
       const keyPair: any = ECPair.fromWIF(privateKeyWIF, network);
 
       // Generate the P2WPKH (SegWit) address
-      const { address }: any = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network });
+      const { address }: any = bitcoin.payments.p2wpkh({
+        pubkey: keyPair.publicKey,
+        network,
+      });
 
       return {
-        keyPair,  // ECPair object to sign transactions
-        address,  // SegWit Bitcoin address
+        keyPair, // ECPair object to sign transactions
+        address, // SegWit Bitcoin address
       };
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(`Failed to generate Bitcoin wallet: ${error.message}`);
       }
-      throw new Error('Failed to generate Bitcoin wallet: Unknown error occurred');
+      throw new Error(
+        "Failed to generate Bitcoin wallet: Unknown error occurred"
+      );
     }
   }
 
   private async generateCosmosSigner(privateKey: string) {
-    const privateKeyBuffer = Buffer.from(privateKey, 'hex');
-    const wallet = await DirectSecp256k1Wallet.fromKey(privateKeyBuffer, 'cosmos');
+    const privateKeyBuffer = Buffer.from(privateKey, "hex");
+    const wallet = await DirectSecp256k1Wallet.fromKey(
+      privateKeyBuffer,
+      "cosmos"
+    );
     return wallet;
   }
-
 }
