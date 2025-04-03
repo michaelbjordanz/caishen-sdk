@@ -1,4 +1,4 @@
-import { CaishenSDK } from './wallets/wallets';
+import { CaishenSDK } from './caishen';
 import { createAgentTools } from './agents/agents';
 
 export { CaishenSDK, createAgentTools };
