@@ -36,27 +36,9 @@
     "zod": "3.x"
   },
   "dependencies": {
-    "@aptos-labs/ts-sdk": "^1.35.0",
-    "@cosmjs/amino": "^0.33.0",
-    "@cosmjs/crypto": "^0.33.0",
-    "@cosmjs/proto-signing": "^0.33.0",
-    "@emurgo/cardano-serialization-lib-nodejs": "^14.1.1",
-    "@mysten/sui": "^1.21.1",
-    "@mysten/sui.js": "^0.54.1",
-    "@solana/web3.js": "^1.98.0",
     "@types/axios": "^0.14.4",
     "axios": "^1.8.1",
-    "bitcoinjs-lib": "^6.1.7",
-    "bs58": "^6.0.0",
     "crypto": "^1.0.1",
-    "ecpair": "^3.0.0-rc.0",
-    "ethers": "^5.7.2",
-    "near-api-js": "^5.0.1",
-    "ripple-keypairs": "^2.0.0",
-    "tiny-secp256k1": "^2.2.3",
-    "tonweb": "^0.0.66",
-    "tronweb": "^6.0.1",
-    "tweetnacl": "^1.0.3",
     "zod": "3.x"
   },
   "devDependencies": {
@@ -64,5 +46,6 @@
     "terser": "^5.37.0",
     "tsup": "^8.0.2",
     "typescript": "^5.6.2"
-  }
+  },
+  "packageManager": "yarn@4.6.0+sha512.5383cc12567a95f1d668fbe762dfe0075c595b4bfff433be478dbbe24e05251a8e8c3eb992a986667c1d53b6c3a9c85b8398c35a960587fbd9fa3a0915406728"
 }
