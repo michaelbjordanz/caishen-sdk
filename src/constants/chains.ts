@@ -5,7 +5,7 @@ export interface Chain {
   chainId: ChainIds;
   name: string;
   symbol: string;
-  rpc: string;
+  rpc?: string;
   logoURI: string;
   blockExplorer: string;
   publicRpc: string;

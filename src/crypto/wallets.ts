@@ -2,6 +2,7 @@ import { BASE_URL, SUPPORTED_CHAINS } from "../constants";
 import ChainIds from "../constants/chain-ids";
 import Chains from "../constants/chains";
 import PublicRpcEndpoints from "../constants/public-rpc-endpoints";
+import axios from 'axios';
 
 export async function getWallet(this: any, {
   chainType,
@@ -20,7 +21,7 @@ export async function getWallet(this: any, {
     );
   }
   try {
-    const response = await axios.get(`${BASE_URL}/api/crypto/wallets`, {
+    const response = await axios.get(`${BASE_URL}/api/wallets`, {
       params: { chainType, account },
       headers: { Authorization: `Bearer ${authToken}` },
     });
@@ -42,7 +43,7 @@ export async function getSupportedChainTypes(this: any) {
         "Authenticate as an agent or user before fetching wallets"
       );
     }
-    const response = await axios.get(`${BASE_URL}/api/crypto/wallets/supported`, {
+    const response = await axios.get(`${BASE_URL}/api/wallets/supported`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     return response.data;

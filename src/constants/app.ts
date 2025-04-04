@@ -14,7 +14,7 @@ export const SUPPORTED_CHAINS = [
   'COSMOS'
 ]
 
-export const BASE_URL = 'https://build.caishen.xyz';
+export const BASE_URL = 'https://build.caishen.xyz'; //'http://localhost:8080' //'https://build.caishen.xyz';
 
 export enum ChainType {
   BITCOIN = 'BITCOIN',
