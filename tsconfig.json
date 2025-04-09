@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": false,
+    "useUnknownInCatchVariables": false,
     "include": ["src"]
   }
 }
