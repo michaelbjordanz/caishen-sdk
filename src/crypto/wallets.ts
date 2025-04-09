@@ -1,6 +1,5 @@
 import { BASE_URL, SUPPORTED_CHAINS } from "../constants";
 import ChainIds from "../constants/chain-ids";
-import Chains from "../constants/chains";
 import PublicRpcEndpoints from "../constants/public-rpc-endpoints";
 import axios from 'axios';
 

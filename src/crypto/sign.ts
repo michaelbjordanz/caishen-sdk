@@ -3,7 +3,7 @@ import { BASE_URL, IWalletAccount } from '../constants';
 
 /*
   if payload?.token is undefined or null, send gas token.
-  Otherise - send tokens
+  Otherwise - send tokens
 */
 export async function signAndSend(this: any, {
   wallet,
