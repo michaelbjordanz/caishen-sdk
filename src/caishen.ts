@@ -4,41 +4,48 @@ import { BASE_URL } from './constants';
 import * as CASH from './cash';
 import * as CRYPTO from './crypto';
 
-export class CaishenSDK {
-  private projectKey: string;
-  private agentToken: string | null = null;
-  private userToken: string | null = null;
-  private connectedAs: 'agent' | 'user' | null = null;
+type ModuleBind = {
+  [key: string]: unknown;
+};
 
-  public cash: Record<string, any>;
-  public crypto: Record<string, any>;
+type BoundFunctions<T> = {
+  [K in keyof T as T[K] extends (...args: any[]) => any
+    ? K
+    : never]: T[K] extends (...args: infer A) => infer R
+    ? (this: any, ...args: A) => R
+    : never;
+};
+
+export class CaishenSDK {
+  protected projectKey: string;
+  protected agentToken: string | null = null;
+  protected userToken: string | null = null;
+  protected connectedAs: 'agent' | 'user' | null = null;
+
+  cash: BoundFunctions<typeof CASH>;
+  crypto: BoundFunctions<typeof CRYPTO>;
 
   constructor({ projectKey }: { projectKey: string }) {
     if (!projectKey) {
       throw new Error('Project key is required');
     }
+
     this.projectKey = projectKey;
-
-    this.cash = {};
-    this.crypto = {};
-
-    this.initializeModules();
-  }
-
-  private initializeModules() {
     this.cash = this.bindModule(CASH);
     this.crypto = this.bindModule(CRYPTO);
   }
 
-  private bindModule(module: Record<string, any>) {
-    const bound: Record<string, any> = {};
-    for (const key of Object.keys(module)) {
-      const fn = module[key];
+  private bindModule<T extends ModuleBind>(m: ModuleBind): BoundFunctions<T> {
+    const bound: ModuleBind = {};
+
+    for (const key of Object.keys(m)) {
+      const fn = m[key];
       if (typeof fn === 'function') {
         bound[key] = fn.bind(this); // binds SDK context to each function
       }
     }
-    return bound;
+
+    return bound as BoundFunctions<T>;
   }
 
   async connectAsAgent({

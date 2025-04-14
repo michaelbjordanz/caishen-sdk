@@ -8,8 +8,10 @@ import {
   WithdrawCashParams,
 } from './schema';
 
+import type { CaishenSDK } from '../caishen';
+
 export async function send(
-  this: any,
+  this: CaishenSDK,
   params: SendTransactionParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
@@ -23,7 +25,7 @@ export async function send(
 }
 
 export async function deposit(
-  this: any,
+  this: CaishenSDK,
   params: DepositCashParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
@@ -37,7 +39,7 @@ export async function deposit(
 }
 
 export async function withdraw(
-  this: any,
+  this: CaishenSDK,
   params: WithdrawCashParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
@@ -51,7 +53,7 @@ export async function withdraw(
 }
 
 export async function getBalance(
-  this: any,
+  this: CaishenSDK,
   {
     account,
   }: {
@@ -71,7 +73,7 @@ export async function getBalance(
   return response.data;
 }
 
-export async function getSupportedTokens(this: any): Promise<Token[]> {
+export async function getSupportedTokens(this: CaishenSDK): Promise<Token[]> {
   const authToken = this.userToken || this.agentToken;
   const response = await ApiClient.get('/cash/tokens', {
     headers: {

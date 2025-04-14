@@ -1,20 +1,27 @@
 import axios from 'axios';
+
 import { BASE_URL, IWalletAccount } from '../constants';
+import type { CaishenSDK } from '../caishen';
 
 /*
   if payload?.token is undefined or null, send gas token.
   Otherise - send tokens
 */
 export async function send(
-  this: any,
+  this: CaishenSDK,
   {
     wallet,
     payload,
   }: {
     wallet: IWalletAccount;
-    payload: { token?: string; amount: string; toAddress: string };
+    payload: {
+      token?: string;
+      amount: string;
+      toAddress: string;
+      memo?: number;
+    };
   },
-) {
+): Promise<string> {
   if (!this.userToken && !this.agentToken) {
     throw new Error('Authentication required. Connect as user or agent first.');
   }
@@ -47,7 +54,7 @@ export async function send(
   Otherise - get token balance
 */
 export async function getBalance(
-  this: any,
+  this: CaishenSDK,
   {
     wallet,
     payload,
@@ -55,7 +62,7 @@ export async function getBalance(
     wallet: IWalletAccount;
     payload: { token?: string };
   },
-) {
+): Promise<string> {
   if (!this.userToken && !this.agentToken) {
     throw new Error('Authentication required. Connect as user or agent first.');
   }
@@ -82,7 +89,7 @@ export async function getBalance(
   use Dune API to get all token balances for address
 */
 export async function getTokenBalances(
-  this: any,
+  this: CaishenSDK,
   {
     wallet,
   }: {

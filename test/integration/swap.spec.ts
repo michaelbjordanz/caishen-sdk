@@ -3,6 +3,7 @@ import * as assert from 'assert';
 import env from 'env-var';
 
 import { CaishenSDK } from '../../src';
+import { ChainType } from '../../src/constants';
 
 describe('Integration: SDK Swap', function () {
   const sdk = new CaishenSDK({
@@ -34,12 +35,12 @@ describe('Integration: SDK Swap', function () {
           amount: MIN_UNITS0,
           from: {
             tokenAddress: '0x0000000000000000000000000000000000000000',
-            chainType: 'ETHEREUM',
+            chainType: ChainType.ETHEREUM,
             chainId: 42161,
           },
           to: {
             tokenAddress: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-            chainType: 'ETHEREUM',
+            chainType: ChainType.ETHEREUM,
             chainId: 42161,
           },
         },
@@ -54,7 +55,7 @@ describe('Integration: SDK Swap', function () {
       const result = await sdk.crypto.swap({
         wallet: {
           account: 1,
-          chainType: 'ETHEREUM',
+          chainType: ChainType.ETHEREUM,
         },
         payload: {
           confirmationCode: route.confirmationCode,
@@ -65,7 +66,7 @@ describe('Integration: SDK Swap', function () {
     });
   });
 
-  describe(`Brdige ETH (Arbitrum) -> USDT (Solana)`, function () {
+  describe(`Bridge ETH (Arbitrum) -> USDT (Solana)`, function () {
     it(`should swap ${MIN_UNITS1} wei on ARB to USDT on Solana`, async () => {
       const route = await sdk.crypto.getSwapRoute({
         wallet: {
@@ -75,12 +76,12 @@ describe('Integration: SDK Swap', function () {
           amount: MIN_UNITS1,
           from: {
             tokenAddress: '0x0000000000000000000000000000000000000000',
-            chainType: 'ETHEREUM',
+            chainType: ChainType.ETHEREUM,
             chainId: 42161,
           },
           to: {
             tokenAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-            chainType: 'SOLANA',
+            chainType: ChainType.SOLANA,
           },
         },
       });
@@ -94,7 +95,7 @@ describe('Integration: SDK Swap', function () {
       const result = await sdk.crypto.swap({
         wallet: {
           account: 1,
-          chainType: 'ETHEREUM',
+          chainType: ChainType.ETHEREUM,
         },
         payload: {
           confirmationCode: route.confirmationCode,
@@ -115,11 +116,12 @@ describe('Integration: SDK Swap', function () {
           amount: MIN_UNITS1,
           from: {
             tokenAddress: 'bitcoin',
-            chainType: 'BITCOIN',
+            chainType: ChainType.BITCOIN,
           },
           to: {
-            tokenAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-            chainType: 'SOLANA',
+            tokenAddress: '0x0000000000000000000000000000000000000000',
+            chainType: ChainType.ETHEREUM,
+            chainId: 56,
           },
         },
       });
@@ -133,7 +135,7 @@ describe('Integration: SDK Swap', function () {
       const result = await sdk.crypto.swap({
         wallet: {
           account: 1,
-          chainType: 'BITCOIN',
+          chainType: ChainType.BITCOIN,
         },
         payload: {
           confirmationCode: route.confirmationCode,
