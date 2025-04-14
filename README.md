@@ -290,7 +290,7 @@ Execute the swap route using a confirmation code.
 
 | Field       | Type   | Description |
 |-------------|--------|-------------|
-| `wallet`    | `Pick<IWalletAccount, 'account' | 'chainType'>` | Wallet info |
+| `wallet`    | `Pick<IWalletAccount, 'account', 'chainType'>` | Wallet info |
 | `payload`   | `object` | Swap payload including `confirmationCode` |
 
 #### `payload` structure:
