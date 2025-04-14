@@ -14,7 +14,12 @@ export async function signAndSend(
     payload,
   }: {
     wallet: IWalletAccount;
-    payload: { token?: string; amount: string; toAddress: string };
+    payload: {
+      token?: string;
+      amount: string;
+      toAddress: string;
+      memo?: number;
+    };
   },
 ): Promise<string> {
   if (!this.userToken && !this.agentToken) {
