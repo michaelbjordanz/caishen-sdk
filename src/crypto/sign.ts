@@ -1,20 +1,27 @@
 import axios from 'axios';
 import { BASE_URL, IWalletAccount } from '../constants';
 
+import type { CaishenSDK } from '../caishen';
+
 /*
   if payload?.token is undefined or null, send gas token.
   Otherwise - send tokens
 */
 export async function signAndSend(
-  this: any,
+  this: CaishenSDK,
   {
     wallet,
     payload,
   }: {
     wallet: IWalletAccount;
-    payload: { token?: string; amount: string; toAddress: string };
+    payload: {
+      token?: string;
+      amount: string;
+      toAddress: string;
+      memo?: number;
+    };
   },
-) {
+): Promise<string> {
   if (!this.userToken && !this.agentToken) {
     throw new Error('Authentication required. Connect as user or agent first.');
   }

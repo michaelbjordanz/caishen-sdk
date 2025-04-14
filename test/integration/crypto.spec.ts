@@ -92,14 +92,17 @@ describe('Integration: SDK Crypto', function () {
               account: 1,
               chainId: config.chainId,
               chainType: config.type,
-              rpc: await sdk.crypto
-                .getRPC(config.chainId)
-                .catch(() => undefined),
+              rpc:
+                (config.chainId &&
+                  (await sdk.crypto
+                    .getRPC(config.chainId)
+                    .catch(() => undefined))) ||
+                undefined,
             },
             payload: {
               token: ('address' in token && token.address) || undefined,
               toAddress: config.transferDest.address,
-              memory: config.transferDest.memo,
+              memo: config.transferDest.memo,
               amount: minUnits4Send,
             },
           });

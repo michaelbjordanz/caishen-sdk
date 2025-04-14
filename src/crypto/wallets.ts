@@ -3,16 +3,26 @@ import ChainIds from '../constants/chain-ids';
 import PublicRpcEndpoints from '../constants/public-rpc-endpoints';
 import axios from 'axios';
 
+import type { CaishenSDK } from '../caishen';
+
 export async function getWallet(
-  this: any,
+  this: CaishenSDK,
   {
     chainType,
+    chainId,
     account,
   }: {
     chainType: string;
+    chainId?: number;
     account: number;
   },
-): Promise<any> {
+): Promise<{
+  account: number;
+  address: string;
+  chainType: string;
+  publicKey: string;
+  privateKey?: string;
+}> {
   if (!chainType || account === undefined) {
     throw new Error('chainType and account number are required');
   }
@@ -22,7 +32,7 @@ export async function getWallet(
   }
   try {
     const response = await axios.get(`${BASE_URL}/api/crypto/wallets`, {
-      params: { chainType, account },
+      params: { chainType, account, chainId },
       headers: { Authorization: `Bearer ${authToken}` },
     });
     return response.data;
@@ -33,7 +43,9 @@ export async function getWallet(
   }
 }
 
-export async function getSupportedChainTypes(this: any) {
+export async function getSupportedChainTypes(
+  this: CaishenSDK,
+): Promise<string[]> {
   try {
     const authToken = this.agentToken || this.userToken;
     if (!authToken) {

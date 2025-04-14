@@ -2,6 +2,8 @@ import axios from 'axios';
 import { BASE_URL, ChainType, IWalletAccount } from '../constants';
 import { Token } from '../cash/schema';
 
+import type { CaishenSDK } from '../caishen';
+
 export type TokenWithPrice = Token & {
   priceUSD: string;
 };
@@ -22,15 +24,7 @@ export interface RouteOutput {
   toToken: TokenWithPrice;
   toAddress?: string;
 
-  nmFee?: {
-    token: Token;
-    amount: string;
-  };
-  gasCostUSD?: string; // Aggregation of underlying gas costs in usd
-  /**
-   * Raw data of the selected route to bypass into the next step (generally execution one) of the swap/bridge.
-   */
-  raw: string;
+  confirmationCode: string;
 }
 
 export interface RouteExecutedResponse {
@@ -41,7 +35,7 @@ export interface RouteExecutedResponse {
 }
 
 export async function swap(
-  this: any,
+  this: CaishenSDK,
   {
     wallet,
     payload,
@@ -51,7 +45,7 @@ export async function swap(
       confirmationCode: string;
     };
   },
-) {
+): Promise<RouteExecutedResponse> {
   const authToken = this.userToken || this.agentToken;
 
   if (!authToken) {
@@ -82,7 +76,7 @@ export async function swap(
 }
 
 export async function getSwapRoute(
-  this: any,
+  this: CaishenSDK,
   {
     wallet,
     payload,
@@ -102,7 +96,7 @@ export async function getSwapRoute(
       };
     };
   },
-) {
+): Promise<RouteOutput> {
   const authToken = this.userToken || this.agentToken;
 
   if (!authToken) {
