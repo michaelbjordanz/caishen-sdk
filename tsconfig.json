@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "moduleDetection": "force",
-    "module": "Preserve",
+    "module": "CommonJS",
     "resolveJsonModule": true,
     "allowJs": false,
     "skipDefaultLibCheck": true,
@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": false,
-    "useUnknownInCatchVariables": false,
-    "include": ["src"]
-  }
+    "useUnknownInCatchVariables": false
+  },
+  "exclude": ["node_modules", "dist"]
 }

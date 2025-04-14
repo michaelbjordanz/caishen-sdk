@@ -57,7 +57,7 @@ export async function swap(this: any, {
 
   try {
     const url = `${BASE_URL}/api/crypto/swap`;
-    const { data: routeOutput } = await axios.post<RouteOutput>(
+    const { data: routeOutput } = await axios.post<RouteExecutedResponse>(
       url,
       {
         wallet,
