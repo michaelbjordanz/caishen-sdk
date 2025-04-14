@@ -50,6 +50,8 @@ const tools = createAgentTools(sdk);
 
 ## 🔑 Authentication
 
+You can authenticate as either a **user** or an **agent**.
+
 ### Connect as User
 
 ```ts
@@ -58,6 +60,21 @@ await sdk.connectAsUser({
   provider: 'USER PROVIDER',
 });
 ```
+
+#### ✅ Supported Providers
+
+- `google`
+- `facebook`
+- `twitter`
+- `discord`
+- `github`
+- `linkedin`
+- `reddit`
+- `line`
+- `kakao`
+- `weibo`
+- `farcaster`
+- `custom`
 
 ### Connect as Agent
 
@@ -73,7 +90,7 @@ await sdk.connectAsAgent({
 
 ### 🔍 Get Wallet Info
 Fetch a wallet associated with a user or agent for a specific chain.
-
+> ⚠️ Note: The privateKey will only be returned if the developer dashboard has explicitly allowed access. With it, you can construct your own signer. If not enabled, the SDK will only return the public data needed to interact via Caishen.
 #### 📥 Parameters
 
 | Name        | Type     | Required | Description |
@@ -91,16 +108,28 @@ const wallet = await sdk.crypto.getWallet({
 });
 ```
 #### 📚 Type: `IWalletAccount`
-
 ```ts
 interface IWalletAccount {
   address: string;
   chainType: string;
   publicKey: string;
-  privateKey?: string;
+  privateKey?: string; // Only returned if access is enabled in the dashboard
   account: number;
 }
 ```
+> ⚠️ Private key is optional and only available if explicitly enabled in the dashboard.
+### MinimalWalletInput
+
+```ts
+interface MinimalWalletInput {
+  account: number;
+  chainType: string;
+  address: string;
+}
+```
+
+Used for all `cash` and `swap` functions to avoid sending sensitive data.
+
 
 ### 🌐 Supported Chains
 Returns the list of all chain types supported by the backend for wallet creation.
@@ -144,7 +173,7 @@ Send a token or native coin (like ETH, MATIC, SOL) to another address.
 |-----------|-----------------------------|----------|-------------|
 | `wallet`  | `IWalletAccount`            | ✅        | Wallet object returned from `getWallet()` |
 | `payload` | `{ token?: string; amount: string; toAddress: string; memo?: number }` | ✅ | Transfer details |
-
+> 🚫 Do not pass the full `IWalletAccount` into this function — only `MinimalWalletInput` is required and safer.
 - If `payload.token` is **undefined**, the function sends the **native gas token** (e.g. ETH, MATIC).
 - If `payload.token` is provided, it sends that **ERC20 or token** instead.
 
@@ -175,7 +204,7 @@ Fetch the balance of a wallet for either the **native coin** or a specific **tok
 |-----------|------------------------------|----------|-------------|
 | `wallet`  | `IWalletAccount`             | ✅        | Wallet object |
 | `payload` | `{ token?: string }`         | ❌        | If `token` is provided, fetch its balance; otherwise fetch native balance |
-
+> 🚫 Do not pass the full `IWalletAccount` into this function — only `MinimalWalletInput` is required and safer.
 #### 📦 Returns
 
 ```ts
@@ -210,6 +239,7 @@ Fetch a possible token swap route across chains.
 |-------------|--------|-------------|
 | `wallet`    | `Pick<IWalletAccount, 'account'>` | Wallet account info |
 | `payload`   | `object` | Swap details including amount, from/to tokens |
+> 🚫 Do not pass the full `IWalletAccount` into this function — only `MinimalWalletInput` is required and safer.
 
 #### `payload` structure:
 
@@ -271,6 +301,7 @@ Execute the swap route using a confirmation code.
 |-------------|--------|-------------|
 | `wallet`    | `Pick<IWalletAccount, 'account', 'chainType'>` | Wallet info |
 | `payload`   | `object` | Swap payload including `confirmationCode` |
+> 🚫 Do not pass the full `IWalletAccount` into this function — only `MinimalWalletInput` is required and safer.
 
 #### `payload` structure:
 
