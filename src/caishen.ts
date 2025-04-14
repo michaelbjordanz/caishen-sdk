@@ -50,14 +50,14 @@ export class CaishenSDK {
   }): Promise<string> {
     if (this.connectedAs) {
       throw new Error(
-        "Already connected as a user or agent. Create a new instance to connect again."
+        "Already connected as a user or agent. Create a new instance to connect again.",
       );
     }
     try {
       const response = await axios.post<{ agentToken: string }>(
         `${BASE_URL}/auth/agents/connect`,
         { agentId, userId },
-        { headers: { projectKey: this.projectKey } }
+        { headers: { projectKey: this.projectKey } },
       );
       this.agentToken = response.data.agentToken;
       this.connectedAs = "agent";
@@ -66,7 +66,7 @@ export class CaishenSDK {
       throw new Error(
         `Agent authentication failed: ${
           error.response?.data?.message || error.message
-        }`
+        }`,
       );
     }
   }
@@ -80,14 +80,14 @@ export class CaishenSDK {
   }): Promise<string> {
     if (this.connectedAs) {
       throw new Error(
-        "Already connected as a user or agent. Create a new instance to connect again."
+        "Already connected as a user or agent. Create a new instance to connect again.",
       );
     }
     try {
       const response = await axios.post<{ userToken: string }>(
         `${BASE_URL}/auth/users/connect`,
         { provider, token },
-        { headers: { projectKey: this.projectKey } }
+        { headers: { projectKey: this.projectKey } },
       );
       this.userToken = response.data.userToken;
       this.connectedAs = "user";
@@ -96,7 +96,7 @@ export class CaishenSDK {
       throw new Error(
         `User authentication failed: ${
           error.response?.data?.message || error.message
-        }`
+        }`,
       );
     }
   }

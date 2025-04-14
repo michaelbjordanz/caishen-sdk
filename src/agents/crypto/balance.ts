@@ -1,5 +1,5 @@
 import { Tool } from "langchain/tools";
-import { CaishenSDK } from '../../caishen';
+import { CaishenSDK } from "../../caishen";
 
 export class CaishenBalanceTool extends Tool {
   name = "crypto_balance_other";
@@ -17,9 +17,9 @@ export class CaishenBalanceTool extends Tool {
         wallet: {
           chainType: parsedInput.chainType,
           account: parsedInput.account,
-          chainId: parsedInput.chainId
+          chainId: parsedInput.chainId,
         },
-        payload: { token: parsedInput.tokenAddress }
+        payload: { token: parsedInput.tokenAddress },
       });
 
       return JSON.stringify({
