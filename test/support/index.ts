@@ -1,1 +1,1 @@
-export * from './blockchain-configs'
+export * from './blockchain-configs';

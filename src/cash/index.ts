@@ -1,4 +1,4 @@
-import { ApiClient } from "../api";
+import { ApiClient } from '../api';
 import {
   BalanceResponse,
   DepositCashParams,
@@ -6,13 +6,14 @@ import {
   Token,
   TransactionResponse,
   WithdrawCashParams,
-} from "./schema";
+} from './schema';
 
-export async function send(this: any,
-  params: SendTransactionParams
+export async function send(
+  this: any,
+  params: SendTransactionParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.post("/cash/send", params, {
+  const response = await ApiClient.post('/cash/send', params, {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
@@ -21,11 +22,12 @@ export async function send(this: any,
   return response.data;
 }
 
-export async function deposit(this: any,
-  params: DepositCashParams
+export async function deposit(
+  this: any,
+  params: DepositCashParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.post("/cash/deposit", params, {
+  const response = await ApiClient.post('/cash/deposit', params, {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
@@ -34,11 +36,12 @@ export async function deposit(this: any,
   return response.data;
 }
 
-export async function withdraw(this: any,
-  params: WithdrawCashParams
+export async function withdraw(
+  this: any,
+  params: WithdrawCashParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.post("/cash/withdraw", params, {
+  const response = await ApiClient.post('/cash/withdraw', params, {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
@@ -47,13 +50,16 @@ export async function withdraw(this: any,
   return response.data;
 }
 
-export async function getBalance(this: any, {
-  account,
-}: {
-  account: number;
-}): Promise<BalanceResponse> {
+export async function getBalance(
+  this: any,
+  {
+    account,
+  }: {
+    account: number;
+  },
+): Promise<BalanceResponse> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.get("/cash/balance", {
+  const response = await ApiClient.get('/cash/balance', {
     params: {
       account,
     },
@@ -67,7 +73,7 @@ export async function getBalance(this: any, {
 
 export async function getSupportedTokens(this: any): Promise<Token[]> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.get("/cash/tokens", {
+  const response = await ApiClient.get('/cash/tokens', {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },

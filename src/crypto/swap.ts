@@ -40,15 +40,18 @@ export interface RouteExecutedResponse {
   error: string | null;
 }
 
-export async function swap(this: any, {
-  wallet,
-  payload
-}: {
-  wallet: Pick<IWalletAccount, 'account' | 'chainType'>;
-  payload: {
-    confirmationCode: string;
-  };
-}) {
+export async function swap(
+  this: any,
+  {
+    wallet,
+    payload,
+  }: {
+    wallet: Pick<IWalletAccount, 'account' | 'chainType'>;
+    payload: {
+      confirmationCode: string;
+    };
+  },
+) {
   const authToken = this.userToken || this.agentToken;
 
   if (!authToken) {
@@ -61,40 +64,45 @@ export async function swap(this: any, {
       url,
       {
         wallet,
-        payload
+        payload,
       },
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
-      }
+      },
     );
 
     return routeOutput;
   } catch (error) {
-    throw new Error(`Failed to execute the swap route: ${error.response?.data?.message || error.message}`);
+    throw new Error(
+      `Failed to execute the swap route: ${error.response?.data?.message || error.message}`,
+    );
   }
 }
 
-export async function getSwapRoute(this: any, {
-  wallet,
-  payload
-}: {
-  wallet: Pick<IWalletAccount, 'account'>,
-  payload: {
-    amount: string;
-    from: {
-      tokenAddress: string;
-      chainType: ChainType;
-      chainId?: number;
+export async function getSwapRoute(
+  this: any,
+  {
+    wallet,
+    payload,
+  }: {
+    wallet: Pick<IWalletAccount, 'account'>;
+    payload: {
+      amount: string;
+      from: {
+        tokenAddress: string;
+        chainType: ChainType;
+        chainId?: number;
+      };
+      to: {
+        tokenAddress: string;
+        chainType: ChainType;
+        chainId?: number;
+      };
     };
-    to: {
-      tokenAddress: string;
-      chainType: ChainType;
-      chainId?: number;
-    };
-  }
-}) {
+  },
+) {
   const authToken = this.userToken || this.agentToken;
 
   if (!authToken) {
@@ -107,17 +115,19 @@ export async function getSwapRoute(this: any, {
       url,
       {
         wallet,
-        payload
+        payload,
       },
       {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
-      }
+      },
     );
 
     return routeOutput;
   } catch (error) {
-    throw new Error(`Failed to get route to execute: ${error.response?.data?.message || error.message}`);
+    throw new Error(
+      `Failed to get route to execute: ${error.response?.data?.message || error.message}`,
+    );
   }
 }

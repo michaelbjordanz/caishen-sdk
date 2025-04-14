@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import * as assert from 'assert'
+import * as assert from 'assert';
 import env from 'env-var';
 
 import { CaishenSDK } from '../../src';
@@ -14,23 +14,30 @@ describe('Integration: SDK Crypto', function () {
     await sdk.connectAsUser({
       token: env.get('USER_TOKEN').required().asString(),
       provider: env.get('USER_PROVIDER').default('custom').asString(),
-    })
-  })
+    });
+  });
 
-  beforeEach(done => {
-    setTimeout(done, 600)
+  beforeEach((done) => {
+    setTimeout(done, 600);
   });
 
   describe('Supported Wallets', function () {
     it('should get supported wallet types', async () => {
       const walletsSupported = await sdk.crypto.getSupportedChainTypes();
 
-      assert.strictEqual(Array.isArray(walletsSupported) && walletsSupported.every(v => typeof v === 'string'), true, 'should return supported blockchain types')
-    })
-  })
+      assert.strictEqual(
+        Array.isArray(walletsSupported) &&
+          walletsSupported.every((v) => typeof v === 'string'),
+        true,
+        'should return supported blockchain types',
+      );
+    });
+  });
 
   for (const config of BLOCKCHAIN_CONFIGS) {
-    const chainId = config.chainId ? ` (Chain ID: ${config.chainId} - ${config.name})` : ''
+    const chainId = config.chainId
+      ? ` (Chain ID: ${config.chainId} - ${config.name})`
+      : '';
 
     describe(`${config.type.toUpperCase()}${chainId}`, function () {
       it('should get wallet', async () => {
@@ -40,20 +47,21 @@ describe('Integration: SDK Crypto', function () {
           chainId: config.chainId,
         });
 
-        const actual = typeof wallet.chainType === 'string' &&
+        const actual =
+          typeof wallet.chainType === 'string' &&
           typeof wallet.address === 'string' &&
           typeof wallet.publicKey === 'string' &&
           (!wallet.privateKey || typeof wallet.privateKey === 'string') &&
-          +wallet.account >= 1
+          +wallet.account >= 1;
 
         assert.strictEqual(
           actual,
           true,
-          'should return address, public key, account number and private key as string (optional)'
+          'should return address, public key, account number and private key as string (optional)',
         );
       });
 
-      for (const token of (config.tokens || [])) {
+      for (const token of config.tokens || []) {
         it(`should get balance (${token.symbol})`, async function () {
           const balance = await sdk.crypto.getBalance({
             wallet: {
@@ -66,13 +74,17 @@ describe('Integration: SDK Crypto', function () {
             },
           });
 
-          assert.strictEqual(BigInt(balance) >= BigInt(0), true, 'should return balance in base units and equal or greater than zero');
+          assert.strictEqual(
+            BigInt(balance) >= BigInt(0),
+            true,
+            'should return balance in base units and equal or greater than zero',
+          );
         });
       }
 
       // NOTE: may fail due to insufficient balance
-      for (const token of (config.tokens || [])) {
-        const minUnits4Send = '1000'
+      for (const token of config.tokens || []) {
+        const minUnits4Send = '1000';
 
         it(`should send ${minUnits4Send} units of ${token.symbol} token`, async function () {
           const transactionHash = await sdk.crypto.send({
@@ -80,7 +92,9 @@ describe('Integration: SDK Crypto', function () {
               account: 1,
               chainId: config.chainId,
               chainType: config.type,
-              rpc: await sdk.crypto.getRPC(config.chainId).catch(() => undefined)
+              rpc: await sdk.crypto
+                .getRPC(config.chainId)
+                .catch(() => undefined),
             },
             payload: {
               token: ('address' in token && token.address) || undefined,
@@ -90,7 +104,11 @@ describe('Integration: SDK Crypto', function () {
             },
           });
 
-          assert.strictEqual(typeof transactionHash, 'string', 'should return transaction hash');
+          assert.strictEqual(
+            typeof transactionHash,
+            'string',
+            'should return transaction hash',
+          );
         });
       }
     });

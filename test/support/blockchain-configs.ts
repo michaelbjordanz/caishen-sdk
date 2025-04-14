@@ -4,12 +4,14 @@ export const BLOCKCHAIN_CONFIGS = [
   {
     type: 'BITCOIN',
     name: 'BITCOIN',
-    tokens: [{
-      symbol: 'BTC',
-    }],
+    tokens: [
+      {
+        symbol: 'BTC',
+      },
+    ],
     transferDest: {
       address: 'bc1q4mxn3kzmw96e3el7fzkyv7rxyqcz5xkxcclmah',
-    }
+    },
   },
   {
     type: 'TRON',
@@ -21,22 +23,24 @@ export const BLOCKCHAIN_CONFIGS = [
       {
         address: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
         symbol: 'USDT',
-      }
+      },
     ],
     transferDest: {
       address: 'TMJ8vu3vm6eU5UndnEdUdaQmKgPJXLRwBQ',
-    }
+    },
   },
   {
     type: 'XRP',
     name: 'RIPPLE',
-    tokens: [{
-      symbol: 'XRP',
-    }],
+    tokens: [
+      {
+        symbol: 'XRP',
+      },
+    ],
     transferDest: {
       memo: 2987311027,
       address: 'rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg',
-    }
+    },
   },
   {
     type: 'TON',
@@ -48,11 +52,11 @@ export const BLOCKCHAIN_CONFIGS = [
       {
         address: 'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs',
         symbol: 'USDT',
-      }
+      },
     ],
     transferDest: {
-      address: 'EQA2jnm1S6htWeWjNfY_3ZBmg_U_tF9KK-RstrySUepbJmEq'
-    }
+      address: 'EQA2jnm1S6htWeWjNfY_3ZBmg_U_tF9KK-RstrySUepbJmEq',
+    },
   },
   {
     type: 'CARDANO',
@@ -61,14 +65,16 @@ export const BLOCKCHAIN_CONFIGS = [
       {
         symbol: 'ADA',
       },
-      { // CIP-25
-        address: 'd1fc2f1815468b948fead16244735a378c3e3c89be52ce85791a926755534443', // encoded name
+      {
+        // CIP-25
+        address:
+          'd1fc2f1815468b948fead16244735a378c3e3c89be52ce85791a926755534443', // encoded name
         symbol: 'USDC',
-      }
+      },
     ],
     transferDest: {
-      address: 'addr1v83jwzvhv4xfkfdwne2f0tgg64994kq929zql0y6frsqrhccnkyfx'
-    }
+      address: 'addr1v83jwzvhv4xfkfdwne2f0tgg64994kq929zql0y6frsqrhccnkyfx',
+    },
   },
   {
     type: 'SOLANA',
@@ -77,30 +83,33 @@ export const BLOCKCHAIN_CONFIGS = [
       {
         symbol: 'SOL',
       },
-      { // SPL
+      {
+        // SPL
         address: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
         symbol: 'USDT',
       },
     ],
     transferDest: {
       address: 'ANnz9oS3CRSgczVBZyGfJFiyYRKutgsxf5CCWToPFRBQ',
-    }
+    },
   },
   {
     type: 'SUI',
     name: 'SUI',
     tokens: [
       {
-        symbol: 'SUI'
+        symbol: 'SUI',
       },
       {
-        address: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC',
-        symbol: 'USDC'
+        address:
+          '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC',
+        symbol: 'USDC',
       },
     ],
     transferDest: {
-      address: '0x8a1183abd28ccbab33c44b513a582cf9eaee580f4d8fdac80e138add659dca59'
-    }
+      address:
+        '0x8a1183abd28ccbab33c44b513a582cf9eaee580f4d8fdac80e138add659dca59',
+    },
   },
   // {
   //   type: 'ETHEREUM', // EVM BASED
@@ -193,15 +202,16 @@ export const BLOCKCHAIN_CONFIGS = [
     name: 'ARBITRUM',
     tokens: [
       {
-        symbol: 'ETH'
+        symbol: 'ETH',
       },
-      { // ERC20
+      {
+        // ERC20
         address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-        symbol: 'USDT'
-      }
+        symbol: 'USDT',
+      },
     ],
     transferDest: {
-      address: '0x6052a78f280474De3e7A4937702914cbFD9b2764'
+      address: '0x6052a78f280474De3e7A4937702914cbFD9b2764',
     },
   },
   // {
@@ -255,4 +265,4 @@ export const BLOCKCHAIN_CONFIGS = [
   //     address: '0x6052a78f280474De3e7A4937702914cbFD9b2764'
   //   },
   // },
-]
+];

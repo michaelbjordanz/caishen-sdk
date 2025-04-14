@@ -1,5 +1,5 @@
-export * from './chain-ids'
-export * from './chains'
-export * from './public-rpc-endpoints'
-export * from './app'
+export * from './chain-ids';
+export * from './chains';
+export * from './public-rpc-endpoints';
+export * from './app';
 // export * from './erc20.abi.ts'
