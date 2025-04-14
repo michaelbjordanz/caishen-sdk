@@ -111,6 +111,22 @@ export const BLOCKCHAIN_CONFIGS = [
         '0x8a1183abd28ccbab33c44b513a582cf9eaee580f4d8fdac80e138add659dca59',
     },
   },
+  {
+    type: 'APTOS',
+    name: 'APTOS',
+    tokens: [
+      {
+        symbol: 'APT',
+      },
+      {
+        address: '0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b',
+        symbol: 'USDT',
+      }
+    ],
+    transferDest: {
+      address: '0x66c9a7af53ee4fea18064c82b2cfae0201aade80043ff91590e515e303fe5b97'
+    }
+  },
   // {
   //   type: 'ETHEREUM', // EVM BASED
   //   chainId: 1,
