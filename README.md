@@ -197,27 +197,6 @@ const dai = await sdk.crypto.getBalance({
 });
 ```
 
-### 📦 (Coming Soon) Get All Token Balances
-**(Coming Soon / Stub)**  
-This function will fetch **all token balances** for a wallet using **Dune Analytics** or other aggregated data APIs.
-
-#### 📥 Parameters
-
-| Name     | Type             | Required | Description |
-|----------|------------------|----------|-------------|
-| `wallet` | `IWalletAccount` | ✅       | Wallet to inspect |
-
-#### 📦 Returns
-
-```ts
-// To be implemented: Array of tokens and balances
-```
-
-#### 📘 Example
-```ts
-const all = await sdk.crypto.getTokenBalances({ wallet });
-```
-
 ---
 
 ## 🔁 Token Swap
