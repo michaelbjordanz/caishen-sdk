@@ -5,13 +5,12 @@ import * as CASH from "./cash";
 import * as CRYPTO from "./crypto";
 
 export class CaishenSDK {
-
   private projectKey: string;
   private agentToken: string | null = null;
   private userToken: string | null = null;
   private connectedAs: "agent" | "user" | null = null;
 
-  public cash: Record<string, any>;   
+  public cash: Record<string, any>;
   public crypto: Record<string, any>;
 
   constructor({ projectKey }: { projectKey: string }) {

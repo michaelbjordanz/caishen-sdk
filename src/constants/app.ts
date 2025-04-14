@@ -1,20 +1,7 @@
 import ChainIds from './chain-ids'
 
-export const SUPPORTED_CHAINS = [
-	'BITCOIN',
-	'ETHEREUM',
-	'SOLANA',
-	'SUI',
-  'APTOS',
-  'TON',
-  'NEAR',
-  'TRON',
-  'XRP',
-  'CARDANO',
-  'COSMOS'
-]
-
-export const BASE_URL = 'https://build.caishen.xyz'; //'http://localhost:8080' //'https://build.caishen.xyz';
+export const BASE_URL = 'http://localhost:8080'
+// export const BASE_URL = 'https://build.caishen.xyz'; //'http://localhost:8080' //'https://build.caishen.xyz';
 
 export enum ChainType {
   BITCOIN = 'BITCOIN',
@@ -31,7 +18,7 @@ export enum ChainType {
 }
 
 export interface IWalletAccount {
-  chainType: string; 
+  chainType: string;
   account: number;
   chainId?: ChainIds
   rpc?: string;
