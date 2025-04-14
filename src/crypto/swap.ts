@@ -1,6 +1,6 @@
-import axios from "axios";
-import { BASE_URL, ChainType, IWalletAccount } from "../constants";
-import { Token } from "../cash/schema";
+import axios from 'axios';
+import { BASE_URL, ChainType, IWalletAccount } from '../constants';
+import { Token } from '../cash/schema';
 
 export type TokenWithPrice = Token & {
   priceUSD: string;
@@ -46,7 +46,7 @@ export async function swap(
     wallet,
     payload,
   }: {
-    wallet: Pick<IWalletAccount, "account" | "chainType">;
+    wallet: Pick<IWalletAccount, 'account' | 'chainType'>;
     payload: {
       confirmationCode: string;
     };
@@ -55,7 +55,7 @@ export async function swap(
   const authToken = this.userToken || this.agentToken;
 
   if (!authToken) {
-    throw new Error("Authentication required. Connect as user or agent first.");
+    throw new Error('Authentication required. Connect as user or agent first.');
   }
 
   try {
@@ -87,7 +87,7 @@ export async function getSwapRoute(
     wallet,
     payload,
   }: {
-    wallet: Pick<IWalletAccount, "account">;
+    wallet: Pick<IWalletAccount, 'account'>;
     payload: {
       amount: string;
       from: {
@@ -106,7 +106,7 @@ export async function getSwapRoute(
   const authToken = this.userToken || this.agentToken;
 
   if (!authToken) {
-    throw new Error("Authentication required. Connect as user or agent first.");
+    throw new Error('Authentication required. Connect as user or agent first.');
   }
 
   try {

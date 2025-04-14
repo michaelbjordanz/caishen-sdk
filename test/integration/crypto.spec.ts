@@ -1,19 +1,19 @@
-import "dotenv/config";
-import * as assert from "assert";
-import env from "env-var";
+import 'dotenv/config';
+import * as assert from 'assert';
+import env from 'env-var';
 
-import { CaishenSDK } from "../../src";
-import { BLOCKCHAIN_CONFIGS } from "../support";
+import { CaishenSDK } from '../../src';
+import { BLOCKCHAIN_CONFIGS } from '../support';
 
-describe("Integration: SDK Crypto", function () {
+describe('Integration: SDK Crypto', function () {
   const sdk = new CaishenSDK({
-    projectKey: env.get("PROJECT_KEY").required().asString(),
+    projectKey: env.get('PROJECT_KEY').required().asString(),
   });
 
   before(async () => {
     await sdk.connectAsUser({
-      token: env.get("USER_TOKEN").required().asString(),
-      provider: env.get("USER_PROVIDER").default("custom").asString(),
+      token: env.get('USER_TOKEN').required().asString(),
+      provider: env.get('USER_PROVIDER').default('custom').asString(),
     });
   });
 
@@ -21,15 +21,15 @@ describe("Integration: SDK Crypto", function () {
     setTimeout(done, 600);
   });
 
-  describe("Supported Wallets", function () {
-    it("should get supported wallet types", async () => {
+  describe('Supported Wallets', function () {
+    it('should get supported wallet types', async () => {
       const walletsSupported = await sdk.crypto.getSupportedChainTypes();
 
       assert.strictEqual(
         Array.isArray(walletsSupported) &&
-          walletsSupported.every((v) => typeof v === "string"),
+          walletsSupported.every((v) => typeof v === 'string'),
         true,
-        "should return supported blockchain types",
+        'should return supported blockchain types',
       );
     });
   });
@@ -37,10 +37,10 @@ describe("Integration: SDK Crypto", function () {
   for (const config of BLOCKCHAIN_CONFIGS) {
     const chainId = config.chainId
       ? ` (Chain ID: ${config.chainId} - ${config.name})`
-      : "";
+      : '';
 
     describe(`${config.type.toUpperCase()}${chainId}`, function () {
-      it("should get wallet", async () => {
+      it('should get wallet', async () => {
         const wallet = await sdk.crypto.getWallet({
           account: 1,
           chainType: config.type,
@@ -48,16 +48,16 @@ describe("Integration: SDK Crypto", function () {
         });
 
         const actual =
-          typeof wallet.chainType === "string" &&
-          typeof wallet.address === "string" &&
-          typeof wallet.publicKey === "string" &&
-          (!wallet.privateKey || typeof wallet.privateKey === "string") &&
+          typeof wallet.chainType === 'string' &&
+          typeof wallet.address === 'string' &&
+          typeof wallet.publicKey === 'string' &&
+          (!wallet.privateKey || typeof wallet.privateKey === 'string') &&
           +wallet.account >= 1;
 
         assert.strictEqual(
           actual,
           true,
-          "should return address, public key, account number and private key as string (optional)",
+          'should return address, public key, account number and private key as string (optional)',
         );
       });
 
@@ -70,21 +70,21 @@ describe("Integration: SDK Crypto", function () {
               chainType: config.type,
             },
             payload: {
-              token: ("address" in token && token.address) || undefined,
+              token: ('address' in token && token.address) || undefined,
             },
           });
 
           assert.strictEqual(
             BigInt(balance) >= BigInt(0),
             true,
-            "should return balance in base units and equal or greater than zero",
+            'should return balance in base units and equal or greater than zero',
           );
         });
       }
 
       // NOTE: may fail due to insufficient balance
       for (const token of config.tokens || []) {
-        const minUnits4Send = "1000";
+        const minUnits4Send = '1000';
 
         it(`should send ${minUnits4Send} units of ${token.symbol} token`, async function () {
           const transactionHash = await sdk.crypto.send({
@@ -97,7 +97,7 @@ describe("Integration: SDK Crypto", function () {
                 .catch(() => undefined),
             },
             payload: {
-              token: ("address" in token && token.address) || undefined,
+              token: ('address' in token && token.address) || undefined,
               toAddress: config.transferDest.address,
               memory: config.transferDest.memo,
               amount: minUnits4Send,
@@ -106,8 +106,8 @@ describe("Integration: SDK Crypto", function () {
 
           assert.strictEqual(
             typeof transactionHash,
-            "string",
-            "should return transaction hash",
+            'string',
+            'should return transaction hash',
           );
         });
       }

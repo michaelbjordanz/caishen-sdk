@@ -1,20 +1,20 @@
-import ChainIds from "./chain-ids";
+import ChainIds from './chain-ids';
 
-export const BASE_URL = "http://localhost:8080";
+export const BASE_URL = 'http://localhost:8080';
 // export const BASE_URL = 'https://build.caishen.xyz'; //'http://localhost:8080' //'https://build.caishen.xyz';
 
 export enum ChainType {
-  BITCOIN = "BITCOIN",
-  SOLANA = "SOLANA",
-  ETHEREUM = "ETHEREUM",
-  SUI = "SUI",
-  APTOS = "APTOS",
-  TON = "TON",
-  NEAR = "NEAR",
-  TRON = "TRON",
-  XRP = "XRP",
-  CARDANO = "CARDANO",
-  COSMOS = "COSMOS",
+  BITCOIN = 'BITCOIN',
+  SOLANA = 'SOLANA',
+  ETHEREUM = 'ETHEREUM',
+  SUI = 'SUI',
+  APTOS = 'APTOS',
+  TON = 'TON',
+  NEAR = 'NEAR',
+  TRON = 'TRON',
+  XRP = 'XRP',
+  CARDANO = 'CARDANO',
+  COSMOS = 'COSMOS',
 }
 
 export interface IWalletAccount {

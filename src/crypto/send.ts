@@ -1,5 +1,5 @@
-import axios from "axios";
-import { BASE_URL, IWalletAccount } from "../constants";
+import axios from 'axios';
+import { BASE_URL, IWalletAccount } from '../constants';
 
 /*
   if payload?.token is undefined or null, send gas token.
@@ -16,7 +16,7 @@ export async function send(
   },
 ) {
   if (!this.userToken && !this.agentToken) {
-    throw new Error("Authentication required. Connect as user or agent first.");
+    throw new Error('Authentication required. Connect as user or agent first.');
   }
 
   try {
@@ -57,7 +57,7 @@ export async function getBalance(
   },
 ) {
   if (!this.userToken && !this.agentToken) {
-    throw new Error("Authentication required. Connect as user or agent first.");
+    throw new Error('Authentication required. Connect as user or agent first.');
   }
 
   try {
@@ -74,7 +74,7 @@ export async function getBalance(
     });
     return response.data;
   } catch (error: any) {
-    throw new Error("Failed to get balance");
+    throw new Error('Failed to get balance');
   }
 }
 

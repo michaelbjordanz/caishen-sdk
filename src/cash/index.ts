@@ -1,4 +1,4 @@
-import { ApiClient } from "../api";
+import { ApiClient } from '../api';
 import {
   BalanceResponse,
   DepositCashParams,
@@ -6,14 +6,14 @@ import {
   Token,
   TransactionResponse,
   WithdrawCashParams,
-} from "./schema";
+} from './schema';
 
 export async function send(
   this: any,
   params: SendTransactionParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.post("/cash/send", params, {
+  const response = await ApiClient.post('/cash/send', params, {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
@@ -27,7 +27,7 @@ export async function deposit(
   params: DepositCashParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.post("/cash/deposit", params, {
+  const response = await ApiClient.post('/cash/deposit', params, {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
@@ -41,7 +41,7 @@ export async function withdraw(
   params: WithdrawCashParams,
 ): Promise<TransactionResponse> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.post("/cash/withdraw", params, {
+  const response = await ApiClient.post('/cash/withdraw', params, {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
@@ -59,7 +59,7 @@ export async function getBalance(
   },
 ): Promise<BalanceResponse> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.get("/cash/balance", {
+  const response = await ApiClient.get('/cash/balance', {
     params: {
       account,
     },
@@ -73,7 +73,7 @@ export async function getBalance(
 
 export async function getSupportedTokens(this: any): Promise<Token[]> {
   const authToken = this.userToken || this.agentToken;
-  const response = await ApiClient.get("/cash/tokens", {
+  const response = await ApiClient.get('/cash/tokens', {
     headers: {
       Authorization: `Bearer ${authToken}`,
     },

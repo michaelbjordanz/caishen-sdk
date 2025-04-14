@@ -1,8 +1,8 @@
-import { Tool } from "langchain/tools";
-import { CaishenSDK } from "../../caishen";
+import { Tool } from 'langchain/tools';
+import { CaishenSDK } from '../../caishen';
 
 export class CaishenTransferTool extends Tool {
-  name = "crypto_transfer";
+  name = 'crypto_transfer';
   description = `Transfer tokens to another address ( also called as wallet address )`;
 
   constructor(private sdk: CaishenSDK) {
@@ -27,17 +27,17 @@ export class CaishenTransferTool extends Tool {
       });
 
       return JSON.stringify({
-        status: "success",
-        message: "Transfer completed successfully",
+        status: 'success',
+        message: 'Transfer completed successfully',
         amount: parsedInput.amount,
         recipient: parsedInput.toAddress,
         transaction: tx,
       });
     } catch (error: any) {
       return JSON.stringify({
-        status: "error",
+        status: 'error',
         message: error.message,
-        code: error.code || "UNKNOWN_ERROR",
+        code: error.code || 'UNKNOWN_ERROR',
       });
     }
   }

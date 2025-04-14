@@ -1,7 +1,7 @@
-import { BASE_URL } from "../constants";
-import ChainIds from "../constants/chain-ids";
-import PublicRpcEndpoints from "../constants/public-rpc-endpoints";
-import axios from "axios";
+import { BASE_URL } from '../constants';
+import ChainIds from '../constants/chain-ids';
+import PublicRpcEndpoints from '../constants/public-rpc-endpoints';
+import axios from 'axios';
 
 export async function getWallet(
   this: any,
@@ -14,11 +14,11 @@ export async function getWallet(
   },
 ): Promise<any> {
   if (!chainType || account === undefined) {
-    throw new Error("chainType and account number are required");
+    throw new Error('chainType and account number are required');
   }
   const authToken = this.agentToken || this.userToken;
   if (!authToken) {
-    throw new Error("Authenticate as an agent or user before fetching wallets");
+    throw new Error('Authenticate as an agent or user before fetching wallets');
   }
   try {
     const response = await axios.get(`${BASE_URL}/api/crypto/wallets`, {
@@ -38,7 +38,7 @@ export async function getSupportedChainTypes(this: any) {
     const authToken = this.agentToken || this.userToken;
     if (!authToken) {
       throw new Error(
-        "Authenticate as an agent or user before fetching wallets",
+        'Authenticate as an agent or user before fetching wallets',
       );
     }
     const response = await axios.get(
@@ -49,7 +49,7 @@ export async function getSupportedChainTypes(this: any) {
     );
     return response.data;
   } catch (err) {
-    throw new Error("Failed to get supported chain types");
+    throw new Error('Failed to get supported chain types');
   }
 }
 

@@ -1,18 +1,18 @@
-import "dotenv/config";
-import * as assert from "assert";
-import env from "env-var";
+import 'dotenv/config';
+import * as assert from 'assert';
+import env from 'env-var';
 
-import { CaishenSDK } from "../../src";
+import { CaishenSDK } from '../../src';
 
-describe("Integration: SDK Swap", function () {
+describe('Integration: SDK Swap', function () {
   const sdk = new CaishenSDK({
-    projectKey: env.get("PROJECT_KEY").required().asString(),
+    projectKey: env.get('PROJECT_KEY').required().asString(),
   });
 
   before(async () => {
     await sdk.connectAsUser({
-      token: env.get("USER_TOKEN").required().asString(),
-      provider: env.get("USER_PROVIDER").default("custom").asString(),
+      token: env.get('USER_TOKEN').required().asString(),
+      provider: env.get('USER_PROVIDER').default('custom').asString(),
     });
   });
 
@@ -20,9 +20,9 @@ describe("Integration: SDK Swap", function () {
     setTimeout(done, 1_000);
   });
 
-  const MIN_UNITS0 = "1000000000000";
-  const MIN_UNITS1 = "1000000000000000";
-  const MIN_UNITS2 = "1000000";
+  const MIN_UNITS0 = '1000000000000';
+  const MIN_UNITS1 = '1000000000000000';
+  const MIN_UNITS2 = '1000000';
 
   describe(`Swap on ARB`, function () {
     it(`should swap ${MIN_UNITS0} wei to USDT0`, async () => {
@@ -33,13 +33,13 @@ describe("Integration: SDK Swap", function () {
         payload: {
           amount: MIN_UNITS0,
           from: {
-            tokenAddress: "0x0000000000000000000000000000000000000000",
-            chainType: "ETHEREUM",
+            tokenAddress: '0x0000000000000000000000000000000000000000',
+            chainType: 'ETHEREUM',
             chainId: 42161,
           },
           to: {
-            tokenAddress: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
-            chainType: "ETHEREUM",
+            tokenAddress: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+            chainType: 'ETHEREUM',
             chainId: 42161,
           },
         },
@@ -47,14 +47,14 @@ describe("Integration: SDK Swap", function () {
 
       assert.strictEqual(
         typeof route?.confirmationCode,
-        "string",
-        "should return confirmation code to execute route",
+        'string',
+        'should return confirmation code to execute route',
       );
 
       const result = await sdk.crypto.swap({
         wallet: {
           account: 1,
-          chainType: "ETHEREUM",
+          chainType: 'ETHEREUM',
         },
         payload: {
           confirmationCode: route.confirmationCode,
@@ -74,27 +74,27 @@ describe("Integration: SDK Swap", function () {
         payload: {
           amount: MIN_UNITS1,
           from: {
-            tokenAddress: "0x0000000000000000000000000000000000000000",
-            chainType: "ETHEREUM",
+            tokenAddress: '0x0000000000000000000000000000000000000000',
+            chainType: 'ETHEREUM',
             chainId: 42161,
           },
           to: {
-            tokenAddress: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-            chainType: "SOLANA",
+            tokenAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+            chainType: 'SOLANA',
           },
         },
       });
 
       assert.strictEqual(
         typeof route?.confirmationCode,
-        "string",
-        "should return confirmation code to execute route",
+        'string',
+        'should return confirmation code to execute route',
       );
 
       const result = await sdk.crypto.swap({
         wallet: {
           account: 1,
-          chainType: "ETHEREUM",
+          chainType: 'ETHEREUM',
         },
         payload: {
           confirmationCode: route.confirmationCode,
@@ -114,26 +114,26 @@ describe("Integration: SDK Swap", function () {
         payload: {
           amount: MIN_UNITS1,
           from: {
-            tokenAddress: "bitcoin",
-            chainType: "BITCOIN",
+            tokenAddress: 'bitcoin',
+            chainType: 'BITCOIN',
           },
           to: {
-            tokenAddress: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-            chainType: "SOLANA",
+            tokenAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+            chainType: 'SOLANA',
           },
         },
       });
 
       assert.strictEqual(
         typeof route?.confirmationCode,
-        "string",
-        "should return confirmation code to execute route",
+        'string',
+        'should return confirmation code to execute route',
       );
 
       const result = await sdk.crypto.swap({
         wallet: {
           account: 1,
-          chainType: "BITCOIN",
+          chainType: 'BITCOIN',
         },
         payload: {
           confirmationCode: route.confirmationCode,

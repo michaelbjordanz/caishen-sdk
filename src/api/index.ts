@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const ApiClient = axios.create({
-  baseURL: process.env.CAISHEN_API_URL || "http://localhost:8080/api",
+  baseURL: process.env.CAISHEN_API_URL || 'http://localhost:8080/api',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 

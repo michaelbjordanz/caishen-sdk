@@ -1,21 +1,21 @@
-import axios from "axios";
-import { BASE_URL } from "./constants";
+import axios from 'axios';
+import { BASE_URL } from './constants';
 
-import * as CASH from "./cash";
-import * as CRYPTO from "./crypto";
+import * as CASH from './cash';
+import * as CRYPTO from './crypto';
 
 export class CaishenSDK {
   private projectKey: string;
   private agentToken: string | null = null;
   private userToken: string | null = null;
-  private connectedAs: "agent" | "user" | null = null;
+  private connectedAs: 'agent' | 'user' | null = null;
 
   public cash: Record<string, any>;
   public crypto: Record<string, any>;
 
   constructor({ projectKey }: { projectKey: string }) {
     if (!projectKey) {
-      throw new Error("Project key is required");
+      throw new Error('Project key is required');
     }
     this.projectKey = projectKey;
 
@@ -34,7 +34,7 @@ export class CaishenSDK {
     const bound: Record<string, any> = {};
     for (const key of Object.keys(module)) {
       const fn = module[key];
-      if (typeof fn === "function") {
+      if (typeof fn === 'function') {
         bound[key] = fn.bind(this); // binds SDK context to each function
       }
     }
@@ -50,7 +50,7 @@ export class CaishenSDK {
   }): Promise<string> {
     if (this.connectedAs) {
       throw new Error(
-        "Already connected as a user or agent. Create a new instance to connect again.",
+        'Already connected as a user or agent. Create a new instance to connect again.',
       );
     }
     try {
@@ -60,7 +60,7 @@ export class CaishenSDK {
         { headers: { projectKey: this.projectKey } },
       );
       this.agentToken = response.data.agentToken;
-      this.connectedAs = "agent";
+      this.connectedAs = 'agent';
       return this.agentToken;
     } catch (error: any) {
       throw new Error(
@@ -80,7 +80,7 @@ export class CaishenSDK {
   }): Promise<string> {
     if (this.connectedAs) {
       throw new Error(
-        "Already connected as a user or agent. Create a new instance to connect again.",
+        'Already connected as a user or agent. Create a new instance to connect again.',
       );
     }
     try {
@@ -90,7 +90,7 @@ export class CaishenSDK {
         { headers: { projectKey: this.projectKey } },
       );
       this.userToken = response.data.userToken;
-      this.connectedAs = "user";
+      this.connectedAs = 'user';
       return this.userToken;
     } catch (error: any) {
       throw new Error(
