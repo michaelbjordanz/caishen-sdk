@@ -136,6 +136,14 @@ await sdk.connectAsAgent({
 | `chainId`   | number   | ❌        | Optional chain ID (e.g., 1 for Ethereum) |
 | `account`   | number   | ✅        | Account index or identifier |
 
+
+#### ✅ Supported chainTypes
+
+- `BITCOIN`, `SOLANA`, `ETHEREUM`, `SUI`, `APTOS`, `TON`
+- `TRON`, `NEAR`, `XRP`, `CARDANO`, `COSMOS`
+
+---
+
 #### 📘 Example
 ```ts
 const wallet = await sdk.crypto.getWallet({
