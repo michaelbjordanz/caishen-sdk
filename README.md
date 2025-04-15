@@ -1,4 +1,3 @@
-
 # Caishen SDK
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -20,6 +19,7 @@
 - 🔒 Secure wallet management
 - ⚙️ Type-safe TypeScript APIs
 - 💸 Token operations: Send, Balance, Swap, Deposit, Withdraw
+- Cash operations: Send, Deposit, Withdraw
 
 ---
 
@@ -50,6 +50,8 @@ const tools = createAgentTools(sdk);
 
 ## 🔑 Authentication
 
+You can authenticate as either a **user** or an **agent**.
+
 ### Connect as User
 
 ```ts
@@ -59,20 +61,72 @@ await sdk.connectAsUser({
 });
 ```
 
+#### ✅ Supported Providers
+
+- `google`, `facebook`, `twitter`, `discord`, `github`, `linkedin`
+- `reddit`, `line`, `kakao`, `weibo`, `farcaster`, `custom`
+
+---
+
+### 🔐 Custom Authentication
+
+If you want to authenticate users **from your own backend**, you can use the `custom` provider.
+
+In this case:
+
+- You must **encrypt a JWT** on your backend using your `projectSecret` (found in your Caishen developer dashboard).
+- That encrypted token must contain an object like `{ id: string }`, where `id` is the user identifier in your system.
+- You then pass this encrypted token into `connectAsUser`.
+
+#### 💡 Example
+
+**Backend-side (Node.js):**
+
+```ts
+import jwt from 'jsonwebtoken';
+
+const payload = { id: 'user-123' };
+const token = jwt.sign(payload, projectSecret);
+```
+
+**Frontend-side:**
+
+```ts
+await sdk.connectAsUser({
+  provider: 'custom',
+  token: 'ENCRYPTED_JWT_TOKEN',
+});
+```
+
+On the Caishen backend, this token is decrypted with your `projectSecret` using:
+
+```ts
+jwt.verify(token, projectSecret); // -> { id: string }
+```
+
+> ⚠️ Never share your `projectSecret` publicly. Only your server should have access to it.
+
+---
+
 ### Connect as Agent
 
 ```ts
 await sdk.connectAsAgent({
   agentId: 'AGENT ID',
+  userId: 'USER ID',
 });
 ```
+
+> Different values for `agentId` and `userId` will generate different wallet scopes.
 
 ---
 
 ## 👛 Wallets
 
 ### 🔍 Get Wallet Info
-Fetch a wallet associated with a user or agent for a specific chain.
+
+> ⚠️ The `privateKey` is only returned if `allowPrivateKeyAccess` is enabled in your developer dashboard.  
+> You do **not** need to send the private key back to the server. All you need is `{ account, chainType }`.
 
 #### 📥 Parameters
 
@@ -90,71 +144,37 @@ const wallet = await sdk.crypto.getWallet({
   account: 0,
 });
 ```
-#### 📚 Type: `IWalletAccount`
 
+#### 📚 Type: `IWalletAccount`
 ```ts
 interface IWalletAccount {
   address: string;
   chainType: string;
-  publicKey: string;
-  privateKey?: string;
   account: number;
+  publicKey: string;
+  privateKey?: string; // Only returned if access is enabled in the dashboard
 }
 ```
 
-### 🌐 Supported Chains
-Returns the list of all chain types supported by the backend for wallet creation.
-
-#### 📦 Returns
+### MinimalWalletInput
 
 ```ts
-string[] // e.g., ['evm', 'solana']
+interface MinimalWalletInput {
+  account: number;
+  chainType: string;
+  address: string;
+}
 ```
 
-#### 📘 Example
-```ts
-const chains = await sdk.crypto.getSupportedChainTypes();
-```
-
-### 🔗 Get EVM RPC URL
-Returns the public RPC endpoint URL for a given EVM-compatible chain ID.
-
-### 📥 Parameters
-
-| Name       | Type     | Required | Description |
-|------------|----------|----------|-------------|
-| `chainId`  | ChainIds | ✅        | Chain ID enum value |
-
-### 📦 Returns
-
-```ts
-const rpcUrl = await sdk.crypto.getRPC(1); // Ethereum Mainnet
-```
+Used for all `cash` and `swap` functions to avoid sending sensitive data.
 
 ---
 
 ## 💸 Token Operations
 
+> 🚫 Use `MinimalWalletInput` when possible to reduce sensitive data exposure.
+
 ### ➕ Send Token
-Send a token or native coin (like ETH, MATIC, SOL) to another address.
-
-#### 📥 Parameters
-
-| Name      | Type                        | Required | Description |
-|-----------|-----------------------------|----------|-------------|
-| `wallet`  | `IWalletAccount`            | ✅        | Wallet object returned from `getWallet()` |
-| `payload` | `{ token?: string; amount: string; toAddress: string; memo?: number }` | ✅ | Transfer details |
-
-- If `payload.token` is **undefined**, the function sends the **native gas token** (e.g. ETH, MATIC).
-- If `payload.token` is provided, it sends that **ERC20 or token** instead.
-
-#### 📦 Returns
-
-```ts
-string // Transaction hash
-```
-
-#### 📘 Example
 ```ts
 const txHash = await sdk.crypto.send({
   wallet,
@@ -167,111 +187,21 @@ const txHash = await sdk.crypto.send({
 ```
 
 ### 📊 Get Balance
-Fetch the balance of a wallet for either the **native coin** or a specific **token**.
-
-#### 📥 Parameters
-
-| Name      | Type                         | Required | Description |
-|-----------|------------------------------|----------|-------------|
-| `wallet`  | `IWalletAccount`             | ✅        | Wallet object |
-| `payload` | `{ token?: string }`         | ❌        | If `token` is provided, fetch its balance; otherwise fetch native balance |
-
-#### 📦 Returns
-
-```ts
-string // Balance (in decimal format)
-```
-
-#### Native Balance
-
 ```ts
 const native = await sdk.crypto.getBalance({ wallet, payload: {} });
-```
-
-#### Token Balance
-
-```ts
 const dai = await sdk.crypto.getBalance({
   wallet,
   payload: { token: '0x6B1754...' },
 });
 ```
 
-### 📦 (Coming Soon) Get All Token Balances
-**(Coming Soon / Stub)**  
-This function will fetch **all token balances** for a wallet using **Dune Analytics** or other aggregated data APIs.
-
-#### 📥 Parameters
-
-| Name     | Type             | Required | Description |
-|----------|------------------|----------|-------------|
-| `wallet` | `IWalletAccount` | ✅       | Wallet to inspect |
-
-#### 📦 Returns
-
-```ts
-// To be implemented: Array of tokens and balances
-```
-
-#### 📘 Example
-```ts
-const all = await sdk.crypto.getTokenBalances({ wallet });
-```
-
 ---
 
 ## 🔁 Token Swap
 
+> 🚫 Do not send the full wallet object. Use only `{ account, chainType }`.
+
 ### 🔍 Get Swap Route
-Fetch a possible token swap route across chains.
-
-#### 📥 Parameters
-
-| Field       | Type   | Description |
-|-------------|--------|-------------|
-| `wallet`    | `Pick<IWalletAccount, 'account'>` | Wallet account info |
-| `payload`   | `object` | Swap details including amount, from/to tokens |
-
-#### `payload` structure:
-
-```ts
-{
-  amount: string; // in smallest unit (e.g. wei)
-  from: {
-    tokenAddress: string;
-    chainType: ChainType;
-    chainId?: number;
-  };
-  to: {
-    tokenAddress: string;
-    chainType: ChainType;
-    chainId?: number;
-  };
-}
-```
-
-#### 📦 Returns
-
-```ts
-interface RouteOutput {
-  id: string;
-  fromChainId: number;
-  fromAmountUSD: string;
-  fromAmount: string;
-  fromToken: TokenWithPrice;
-  fromAddress?: string;
-  toChainId: number;
-  toAmountUSD: string;
-  toAmount: string;
-  toAmountMin: string;
-  toToken: TokenWithPrice;
-  toAddress?: string;
-  confirmationCode: string;
-}
-```
-
-#### 📘 Example
-
 ```ts
 const route = await sdk.crypto.getSwapRoute({
   wallet: { account: 0 },
@@ -284,35 +214,6 @@ const route = await sdk.crypto.getSwapRoute({
 ```
 
 ### 🔄 Execute Swap
-Execute the swap route using a confirmation code.
-
-#### 📥 Parameters
-
-| Field       | Type   | Description |
-|-------------|--------|-------------|
-| `wallet`    | `Pick<IWalletAccount, 'account', 'chainType'>` | Wallet info |
-| `payload`   | `object` | Swap payload including `confirmationCode` |
-
-#### `payload` structure:
-
-```ts
-{
-  confirmationCode: string; // from getSwapRoute()
-}
-```
-
-#### 📦 Returns
-
-```ts
-interface RouteExecutedResponse {
-  transactionStatus: string;
-  transactionHash: string | null;
-  fees: string | null;
-  error: string | null;
-}
-```
-
-#### 📘 Example
 ```ts
 const result = await sdk.crypto.swap({
   wallet: { account: 0, chainType: 'ETHEREUM' },
@@ -323,6 +224,45 @@ const result = await sdk.crypto.swap({
 ---
 
 ## 🏦 Cash Accounts
+
+> **Cash** is a chain-abstracted, gasless stablecoin system designed to make stablecoin transfers seamless, fast, and free.
+
+### 🔍 What is Cash?
+
+**Cash** is an internal ERC-20-compatible asset that abstracts away the complexity of stablecoins across chains. It enables instant, gasless transfers between wallets without needing users to worry about:
+
+- Native gas tokens (e.g., ETH, MATIC)
+- Stablecoin formats (e.g., USDC vs USDT)
+- Blockchain networks (e.g., Arbitrum, Base, Solana)
+
+### 🧪 How It Works
+
+- **Deposit**: Users deposit supported stablecoins (e.g., USDC, USDT) from chains like Arbitrum, Base, or Solana.
+- **Issue**: The system issues equivalent **Cash** tokens 1:1, held in an abstracted balance.
+- **Send**: These Cash tokens can be sent to any wallet address instantly with zero gas cost.
+- **Withdraw**: When users withdraw, their Cash tokens are burned and they receive the original stablecoin on the selected chain.
+
+> ⚠️ Different combinations of `agentId` and `userId` result in separate Cash balances.
+
+### ✅ Benefits
+
+- 💸 Gasless transfers (no ETH/SOL required)
+- ⚡ Cross-chain abstraction
+- 🔄 Simple send/receive interface
+- 🔐 Fully backed, 1:1 redeemable
+
+---
+
+### 💱 Supported Stablecoins
+
+| Chain     | Token | Symbol | Address |
+|-----------|--------|--------|---------|
+| Arbitrum  | USDC  | USDC   | `0xaf88...5831` |
+| Arbitrum  | USDT  | USDT   | `0xFd08...cbb9` |
+| Base      | USDC  | USDC   | `0x8335...2913` |
+| Solana    | USDC  | USDC   | `EPjFWd...TDt1v` |
+
+> See `CASH_SUPPORTED_TOKENS` for full details.
 
 ### 💰 Get Account Balance
 Get current balance of all tokens for a specific account.
@@ -432,8 +372,6 @@ const tokens = await sdk.cash.getSupportedTokens();
 
 ## 🛠 Types
 
-### `TokenWithPrice`
-
 ```ts
 type TokenWithPrice = Token & {
   priceUSD: string;
@@ -445,33 +383,28 @@ type TokenWithPrice = Token & {
 ## 🧱 Build from Source
 
 ```bash
-# Clone & install
 npm install
-
-# Build SDK
-npm run build
-
-# Dev mode
 npm run dev
+npm run build
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions welcome! Open an issue or submit a pull request.
+Contributions welcome! Open an issue or PR.
 
 ---
 
 ## 📜 License
 
-MIT © [CaishenXYZ](https://github.com/CaishenXYZ)
+MIT © [CaishenTech](https://github.com/CaishenTech)
 
 ---
 
 ## 💬 Support
 
-Please open an issue in the GitHub repository for help or contact the maintainers.
+Open an issue on GitHub or contact the maintainers.
 
 ---
 
