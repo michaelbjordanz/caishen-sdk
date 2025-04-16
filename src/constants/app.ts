@@ -1,7 +1,6 @@
 import ChainIds from './chain-ids';
 
-export const BASE_URL = 'http://localhost:8080';
-// export const BASE_URL = 'https://build.caishen.xyz'; //'http://localhost:8080' //'https://build.caishen.xyz';
+export const BASE_URL = 'https://build.caishen.xyz';
 
 export enum ChainType {
   BITCOIN = 'BITCOIN',
