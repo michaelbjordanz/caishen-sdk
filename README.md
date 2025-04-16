@@ -42,7 +42,7 @@ pnpm add @caishen/sdk
 ```ts
 import { CaishenSDK, createAgentTools } from "@caishen/sdk";
 
-const sdk = new CaishenSDK("your-project-key");
+const sdk = new CaishenSDK({ projectKey: "your-project-key" });
 const tools = createAgentTools(sdk);
 ```
 
