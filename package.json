@@ -45,6 +45,7 @@
   "peerDependencies": {
     "zod": "3.x"
   },
+  "files": ["dist"],
   "dependencies": {
     "@langchain/core": "^0.3.44",
     "@types/axios": "^0.14.4",

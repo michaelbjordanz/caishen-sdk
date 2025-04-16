@@ -68,9 +68,9 @@ export async function swap(
     );
 
     return routeOutput;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(
-      `Failed to execute the swap route: ${error.response?.data?.message || error.message}`,
+      `Failed to execute the swap route: ${error?.response?.data?.message || error?.message}`,
     );
   }
 }
@@ -119,9 +119,9 @@ export async function getSwapRoute(
     );
 
     return routeOutput;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(
-      `Failed to get route to execute: ${error.response?.data?.message || error.message}`,
+      `Failed to get route to execute: ${error?.response?.data?.message || error?.message}`,
     );
   }
 }
