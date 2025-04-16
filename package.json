@@ -1,5 +1,5 @@
 {
-  "name": "caishen-sdk",
+  "name": "@caishen/sdk",
   "version": "1.0.0",
   "type": "module",
   "description": "The Caishen SDK gives every agent or user access to unlimited multi-chain crypto wallets",
@@ -23,11 +23,18 @@
     "test:all": "mocha --timeout 30000 --import=tsx 'test/**/*.spec.ts'",
     "build": "tsup src/index.ts --format cjs,esm --dts --clean --sourcemap --minify"
   },
-  "author": "CaishenTech",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Caishen <hello@caishen.tech> (https://caishen.tech)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:CaishenTech/caishen-sdk.git"
+    "url": "https://github.com/CaishenTech/caishen-sdk"
+  },
+  "homepage": "https://github.com/CaishenTech/caishen-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/CaishenTech/caishen-sdk/issues"
   },
   "keywords": [
     "crypto",

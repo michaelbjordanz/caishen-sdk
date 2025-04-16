@@ -26,11 +26,11 @@
 ## 📦 Installation
 
 ```bash
-npm install caishen-sdk
+npm install @caishen/sdk
 # or
-yarn add caishen-sdk
+yarn add @caishen/sdk
 # or
-pnpm add caishen-sdk
+pnpm add @caishen/sdk
 ```
 
 > ⚠️ Requires Node.js ≥ 14.x and TypeScript ≥ 4.x
@@ -40,7 +40,7 @@ pnpm add caishen-sdk
 ## 🚀 Quick Start
 
 ```ts
-import { CaishenSDK, createAgentTools } from "caishen-sdk";
+import { CaishenSDK, createAgentTools } from "@caishen/sdk";
 
 const sdk = new CaishenSDK("your-project-key");
 const tools = createAgentTools(sdk);
