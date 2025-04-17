@@ -37,6 +37,14 @@ pnpm add @caishen/sdk
 
 ---
 
+## 🔗 Links
+
+- 🌐 [Website](https://caishen.tech)
+- 🛠️ [Developer Dashboard](https://dashboard.caishen.tech)
+- 📚 [Docs](https://docs.caishen.tech)
+
+---
+
 ## 🚀 Quick Start
 
 ```ts
