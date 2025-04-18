@@ -1,5 +1,5 @@
 import { Tool } from 'langchain/tools';
-import { CaishenSDK } from '../../caishen';
+import { CaishenSDK } from '../../../caishen';
 
 export class CaishenBalanceTool extends Tool {
   name = 'crypto_balance_other';

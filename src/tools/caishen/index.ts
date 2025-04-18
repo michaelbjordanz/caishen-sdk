@@ -1,6 +1,6 @@
 export * from './crypto';
 
-import type { CaishenSDK } from '../caishen';
+import type { CaishenSDK } from '../../caishen';
 import {
   CaishenBalanceTool,
   CaishenBalanceOtherTool,
