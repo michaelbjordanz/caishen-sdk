@@ -51,10 +51,12 @@
   "dependencies": {
     "@langchain/core": "^0.3.44",
     "@types/axios": "^0.14.4",
+    "ai": "^4.3.9",
     "axios": "^1.8.1",
     "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
     "langchain": "^0.3.21",
+    "reflect-metadata": "^0.2.2",
     "uuid": "^11.1.0",
     "zod": "3.x"
   },
