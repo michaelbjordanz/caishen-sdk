@@ -1,30 +1,17 @@
-import { type GetToolsParams, type ToolBase, type WalletClientBase, getTools } from "../../core";
+import { getToolsFromCaishen } from "../../tools/getToolsFromCaishen";
+import { CaishenSDK } from "../../caishen";
 
-import { type CoreTool, tool } from "ai";
-import type { z } from "zod";
+export async function createVercelAITools({ sdk }: { sdk: CaishenSDK }) {
+  const tools = await getToolsFromCaishen({ sdk });
 
-export type CreateVercelAIToolsParams<TWalletClient extends WalletClientBase> = GetToolsParams<TWalletClient>;
+  const vercelAITools = tools.map((tool) => ({
+    name: tool.name,
+    description: tool.description,
+    parameters: tool.parameters, // Zod schema (can later transform to OpenAI JSON if needed)
+    execute: async (params: any) => {
+      return await tool.execute(params);
+    },
+  }));
 
-export async function createVercelAITools<TWalletClient extends WalletClientBase>({
-    wallet,
-    plugins,
-}: CreateVercelAIToolsParams<TWalletClient>) {
-    const tools: ToolBase[] = await getTools<TWalletClient>({
-        wallet,
-        plugins,
-    });
-
-    const aiTools: { [key: string]: CoreTool } = {};
-
-    for (const t of tools) {
-        aiTools[t.name] = tool({
-            description: t.description,
-            parameters: t.parameters,
-            execute: async (arg: z.output<typeof t.parameters>) => {
-                return await t.execute(arg);
-            },
-        });
-    }
-
-    return aiTools;
+  return vercelAITools;
 }
