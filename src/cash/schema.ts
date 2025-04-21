@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+export const CashGetBalanceSchema = z.object({
+  account: z.number(),
+});
+
 export const SendTransactionSchema = z.object({
   toAddress: z.string(),
   amount: z.string(),
@@ -41,6 +45,7 @@ export const TransactionResponseSchema = z.object({
   isSuccess: z.boolean().optional(),
 });
 
+export type CashGetBalanceParams = z.infer<typeof CashGetBalanceSchema>;
 export type SendTransactionParams = z.infer<typeof SendTransactionSchema>;
 export type DepositCashParams = z.infer<typeof DepositCashSchema>;
 export type WithdrawCashParams = z.infer<typeof WithdrawCashSchema>;

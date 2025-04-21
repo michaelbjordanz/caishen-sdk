@@ -1,54 +1,16 @@
-import {
-    type GetToolsParams,
-    type ToolBase,
-    type WalletClientBase,
-    addParametersToDescription,
-    getTools,
-} from "../../core";
+import { getToolsFromCaishen } from "../../tools/getToolsFromCaishen";
+import { CaishenSDK } from "../../caishen";
 
-import type { z } from "zod";
+export async function createElevenLabsTools({ sdk }: { sdk: CaishenSDK }) {
+  const tools = await getToolsFromCaishen({ sdk });
 
-export type CreateElevenLabsToolsParams<TWalletClient extends WalletClientBase> = {
-    options?: {
-        logTools?: boolean;
+  const elevenLabTools: Record<string, (params: any) => Promise<any>> = {};
+
+  for (const tool of tools) {
+    elevenLabTools[tool.name] = async (params: any) => {
+      return await tool.execute(params);
     };
-} & GetToolsParams<TWalletClient>;
+  }
 
-type ElevenLabsTool = (
-    // biome-ignore lint/suspicious/noExplicitAny: any is returned by the ElevenLabs tools
-    parameters: any,
-    // biome-ignore lint/suspicious/noConfusingVoidType: void is returned by the ElevenLabs tools
-) => Promise<string | number | void> | string | number | void;
-
-export async function createElevenLabsTools<TWalletClient extends WalletClientBase>({
-    wallet,
-    plugins,
-    options,
-}: CreateElevenLabsToolsParams<TWalletClient>) {
-    const tools: ToolBase[] = await getTools<TWalletClient>({
-        wallet,
-        plugins,
-    });
-
-    const elevenLabsTools: { [key: string]: ElevenLabsTool } = {};
-
-    if (options?.logTools) {
-        console.log("Tools:\n");
-    }
-
-    for (const [index, t] of tools.entries()) {
-        elevenLabsTools[t.name] = async (parameters: z.output<typeof t.parameters>) => {
-            return JSON.stringify(await t.execute(parameters));
-        };
-
-        if (options?.logTools) {
-            console.log(
-                `\n${index + 1}. ${t.name}\n\nDescription: ${
-                    t.description
-                }\n\nParameters:\n${addParametersToDescription("", t.parameters)}\n`,
-            );
-        }
-    }
-
-    return elevenLabsTools;
+  return elevenLabTools;
 }
