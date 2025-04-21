@@ -1,9 +1,9 @@
 import { Tool } from 'langchain/tools';
 import { CaishenSDK } from '../../../caishen';
 
-export class CaishenCryptoGetBalanceTool extends Tool {
-  name = "crypto_get_balance";
-  description = `Get the crypto balance for a wallet address.
+export class CaishenCryptoSendTool extends Tool {
+  name = 'send_crypto';
+  description = `Send crypto from a wallet to another address.
   
   Inputs (JSON string):
   - wallet: object
@@ -13,9 +13,12 @@ export class CaishenCryptoGetBalanceTool extends Tool {
     - publicKey: string (optional)
     - account: number (optional)
   - payload: object
-    - token: string (optional) — token address or symbol to check balance for (default is native token like ETH, SOL).
+    - toAddress: string (required) — recipient address
+    - amount: string (required) — amount to send
+    - token: string (optional) — token address or symbol (send gas token if not specified)
+    - memo: number (optional) — transaction memo (for Solana, etc.)
 
-Returns the balance as a string.`;
+Returns the transaction signature as a string.`;
 
   constructor(private sdk: CaishenSDK) {
     super();
@@ -26,26 +29,29 @@ Returns the balance as a string.`;
       const parsedInput = JSON.parse(input);
 
       const wallet = parsedInput.wallet;
-      const payload = parsedInput.payload || {};
+      const payload = parsedInput.payload;
 
       if (!wallet || !wallet.address || !wallet.chainType) {
-        throw new Error("wallet.address and wallet.chainType are required");
+        throw new Error('wallet.address and wallet.chainType are required');
+      }
+      if (!payload || !payload.toAddress || !payload.amount) {
+        throw new Error('payload.toAddress and payload.amount are required');
       }
 
-      const balance = await this.sdk.crypto.getBalance({
+      const signature = await this.sdk.crypto.send({
         wallet,
         payload,
       });
 
       return JSON.stringify({
         status: 'success',
-        balance,
+        signature,
       });
     } catch (error: any) {
       return JSON.stringify({
         status: 'error',
         message: error.message,
-        code: error.code || 'GET_BALANCE_ERROR',
+        code: error.code || 'SEND_CRYPTO_ERROR',
       });
     }
   }

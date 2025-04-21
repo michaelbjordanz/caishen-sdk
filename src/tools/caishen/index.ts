@@ -1,16 +1,35 @@
+export * from './cash';
 export * from './crypto';
 
 import type { CaishenSDK } from '../../caishen';
 import {
-  CaishenBalanceTool,
+  CaishenCryptoGetBalanceTool,
+  CaishenCryptoGetRPCTool,
+  CaishenCryptoGetSupportedChainTypesTool,
+  CaishenCryptoGetSwapRouteTool,
+  CaishenCryptoSendTool,
   CaishenBalanceOtherTool,
-  CaishenTransferTool,
+  CaishenCryptoSwapTool,
+  CaishenCashDepositTool,
+  CaishenCashGetBalanceTool,
+  CaishenCashGetSupportedTokensTool,
+  CaishenCashSendTool,
+  CaishenCashWithdrawTool
 } from './index';
 
 export function createAgentTools(sdk: CaishenSDK) {
   return [
-    new CaishenBalanceTool(sdk),
+    new CaishenCryptoGetBalanceTool(sdk),
+    new CaishenCryptoGetRPCTool(sdk),
+    new CaishenCryptoGetSupportedChainTypesTool(sdk),
+    new CaishenCryptoGetSwapRouteTool(sdk),
+    new CaishenCryptoSendTool(sdk),
     new CaishenBalanceOtherTool(sdk),
-    new CaishenTransferTool(sdk),
+    new CaishenCryptoSwapTool(sdk),
+    new CaishenCashDepositTool(sdk),
+    new CaishenCashGetBalanceTool(sdk),
+    new CaishenCashGetSupportedTokensTool(sdk),
+    new CaishenCashSendTool(sdk),
+    new CaishenCashWithdrawTool(sdk),
   ];
 }
