@@ -1,20 +1,24 @@
-import { tool } from "@langchain/core/tools";
-import { getToolsFromCaishen } from "../../tools/getToolsFromCaishen";
-import { CaishenSDK } from "../../caishen";
+import { tool } from '@langchain/core/tools';
+import { z } from 'zod';
+import { CaishenSDK } from '../../caishen';
+import { getToolsFromCaishen } from '../../tools/getToolsFromCaishen';
 
 export async function createLangchainTools({ sdk }: { sdk: CaishenSDK }) {
   const tools = await getToolsFromCaishen({ sdk });
 
-  return tools.map((t) =>
+  return Object.values(tools).map((t) =>
     tool(
-      async (arg: any) => {
-        return await t.execute(arg);
+      async (arg) => {
+        const execute = t.execute as unknown as (
+          params: z.infer<typeof t.parameters>,
+        ) => Promise<ReturnType<typeof t.execute>>;
+        return await execute(arg);
       },
       {
         name: t.name,
         description: t.description,
         schema: t.parameters,
       },
-    )
+    ),
   );
 }

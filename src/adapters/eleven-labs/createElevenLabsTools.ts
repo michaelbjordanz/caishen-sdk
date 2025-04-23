@@ -1,16 +1,16 @@
-import { getToolsFromCaishen } from "../../tools/getToolsFromCaishen";
-import { CaishenSDK } from "../../caishen";
+import { z } from 'zod';
+import { CaishenSDK } from '../../caishen';
+import { getToolsFromCaishen } from '../../tools/getToolsFromCaishen';
+
+type Tool<T extends z.ZodTypeAny, R> = (params: z.infer<T>) => Promise<R>;
 
 export async function createElevenLabsTools({ sdk }: { sdk: CaishenSDK }) {
   const tools = await getToolsFromCaishen({ sdk });
 
-  const elevenLabTools: Record<string, (params: any) => Promise<any>> = {};
-
-  for (const tool of tools) {
-    elevenLabTools[tool.name] = async (params: any) => {
+  return Object.values(tools).reduce((acc, tool) => {
+    acc[tool.name] = async (params: any) => {
       return await tool.execute(params);
     };
-  }
-
-  return elevenLabTools;
+    return acc;
+  }, {} as Record<string, Tool<any, any>>);
 }
