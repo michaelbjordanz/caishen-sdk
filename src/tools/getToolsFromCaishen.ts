@@ -11,7 +11,8 @@ import {
   CryptoSendSchema,
   CryptoSwapSchema,
 } from '../crypto/schema';
-import { toolBase } from './toolBase';
+import { toolBase } from './ToolBase';
+import { ChainType } from '../constants';
 
 export async function getToolsFromCaishen({ sdk }: { sdk: CaishenSDK }) {
   const tools = {
@@ -240,12 +241,12 @@ export async function getToolsFromCaishen({ sdk }: { sdk: CaishenSDK }) {
           amount: params.amount,
           from: {
             tokenAddress: params.fromAddress,
-            chainType: params.fromChainType,
+            chainType: ChainType[params.fromChainType as keyof typeof ChainType],
             chainId: params.fromChainId,
           },
           to: {
             tokenAddress: params.toAddress,
-            chainType: params.toChainType,
+            chainType: ChainType[params.toChainType as keyof typeof ChainType],
             chainId: params.toChainId,
           },
         };

@@ -5,14 +5,14 @@ export const CryptoSendSchema = z.object({
   chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
   chainId: z.number().optional().describe('The chain ID for the blockchain'),
   publicKey: z.string().optional().describe('The public key of the wallet'),
-  account: z.number().optional().describe('The account number'),
+  account: z.number().describe('The account number'),
   toAddress: z.string().describe('The recipient address to send to'),
   amount: z.string().describe('The amount to send'),
   token: z
     .string()
     .optional()
     .describe('Token address or symbol (send gas token if not specified)'),
-  memo: z.string().optional().describe('Transaction memo (for Solana, etc.)'),
+  memo: z.number().optional().describe('Transaction memo (for Solana, etc.)'),
 });
 
 export const CryptoGetBalanceSchema = z.object({
@@ -20,7 +20,7 @@ export const CryptoGetBalanceSchema = z.object({
   chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
   chainId: z.number().optional().describe('The chain ID for the blockchain'),
   publicKey: z.string().optional().describe('The public key of the wallet'),
-  account: z.number().optional().describe('The account number'),
+  account: z.number().describe('The account number'),
   token: z
     .string()
     .optional()
@@ -30,7 +30,7 @@ export const CryptoGetBalanceSchema = z.object({
 });
 
 export const CryptoSwapSchema = z.object({
-  address: z.string().describe('The wallet address to perform the swap from'),
+  account: z.number().describe('The wallet account number to perform the swap from'),
   chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
   confirmationCode: z.string().describe('The swap route confirmation code'),
 });
