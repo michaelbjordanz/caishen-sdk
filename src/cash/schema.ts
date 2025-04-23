@@ -1,27 +1,31 @@
 import { z } from 'zod';
 
 export const CashGetBalanceSchema = z.object({
-  account: z.number(),
+  account: z.number().describe('The account number to fetch the balance for'),
 });
 
 export const SendTransactionSchema = z.object({
-  toAddress: z.string(),
-  amount: z.string(),
-  account: z.number(),
+  toAddress: z
+    .string()
+    .describe('The recipient account or destination address'),
+  amount: z.string().describe('The amount to send'),
+  account: z.number().describe('The account number to send from'),
 });
 
 export const DepositCashSchema = z.object({
-  amount: z.string(),
-  account: z.number(),
-  tokenAddress: z.string(),
-  chainId: z.number(),
+  amount: z.string().describe('The amount to deposit'),
+  account: z.number().describe('The account number to deposit to'),
+  tokenAddress: z.string().describe('The token address to deposit'),
+  chainId: z.number().describe('The chain ID where the token is located'),
 });
 
 export const WithdrawCashSchema = z.object({
-  amount: z.string(),
-  account: z.number(),
-  tokenAddress: z.string(),
-  chainId: z.number(),
+  amount: z.string().describe('The amount to withdraw'),
+  account: z.number().describe('The account number to withdraw from'),
+  tokenAddress: z.string().describe('The token address to withdraw'),
+  chainId: z
+    .number()
+    .describe('The chain ID where the token should be withdrawn to'),
 });
 
 export const TokenSchema = z.object({

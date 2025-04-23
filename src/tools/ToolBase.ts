@@ -1,8 +1,20 @@
-import type { z } from "zod";
+import type { z } from 'zod';
 
-export type ToolBase = {
+export function toolBase<T extends z.ZodTypeAny, R>({
+  name,
+  description,
+  parameters,
+  execute,
+}: {
   name: string;
   description: string;
-  parameters: z.ZodTypeAny;
-  execute: (params: any) => Promise<any>;
-};
+  parameters: T;
+  execute: (params: z.infer<T>) => Promise<R>;
+}) {
+  return {
+    name,
+    description,
+    parameters,
+    execute,
+  };
+}
