@@ -147,8 +147,9 @@ await sdk.connectAsAgent({
 
 #### ✅ Supported chainTypes
 
-- `BITCOIN`, `SOLANA`, `ETHEREUM`, `SUI`, `APTOS`, `TON`
-- `TRON`, `NEAR`, `XRP`, `CARDANO`, `COSMOS`
+- `BITCOIN`, `LITECOIN`, `DASHCOIN`, `DOGECOIN`
+- `ETHEREUM` (and other EVM-based, such as, `Arbitrum`, `Polygon`, `Optimism`, etc.)
+- `SUI`, `SOLANA`,  `APTOS`, `TON`, `TRON`, `NEAR`, `XRP`, `CARDANO`, `COSMOS`
 
 ---
 
@@ -193,10 +194,21 @@ Used for all `cash` and `swap` functions to avoid sending sensitive data.
 ### ➕ Send Token
 ```ts
 const txHash = await sdk.crypto.send({
-  wallet,
+  wallet: {
+    account: 1,
+    chainType: "ETHEREUM",
+    /**
+     * If not provided, our rpc will be used. 
+     * NOTE: feature is not supported for Bitcoin based blockchains 
+     * (such as Bitcoin, Litecoin, Dogecoin, Dashcoin)
+     * 
+     * Specify ws rpc for Cardano & Ripple,  
+     */
+    rpc: 'your_rpc_url'
+  },
   payload: {
     token: '0xTokenAddress...', // omit for native
-    amount: '0.5',
+    amount: '1000000000000000000', // amount in base units
     toAddress: '0xRecipient...',
   },
 });
@@ -207,7 +219,7 @@ const txHash = await sdk.crypto.send({
 const native = await sdk.crypto.getBalance({ wallet, payload: {} });
 const dai = await sdk.crypto.getBalance({
   wallet,
-  payload: { token: '0x6B1754...' },
+  payload: { token: '0x6B1754...' }, // if not provided, native token is used
 });
 ```
 

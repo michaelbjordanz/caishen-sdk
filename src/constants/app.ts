@@ -4,6 +4,9 @@ export const BASE_URL = 'https://build.caishen.tech';
 
 export enum ChainType {
   BITCOIN = 'BITCOIN',
+  LITECOIN = 'LITECOIN',
+  DASHCOIN = 'DASHCOIN',
+  DOGECOIN = 'DOGECOIN',
   SOLANA = 'SOLANA',
   ETHEREUM = 'ETHEREUM',
   SUI = 'SUI',
@@ -17,8 +20,8 @@ export enum ChainType {
 }
 
 export interface IWalletAccount {
-  chainType: string;
   account: number;
+  chainType: string;
   chainId?: ChainIds;
   rpc?: string;
 }
