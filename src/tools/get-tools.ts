@@ -13,9 +13,10 @@ import {
 } from '../crypto/schema';
 import { toolBase } from './ToolBase';
 import { ChainType } from '../constants';
+import { Tools } from './interfaces';
 
-export async function getToolsFromCaishen({ sdk }: { sdk: CaishenSDK }) {
-  const tools = {
+export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
+  const tools: Tools = {
     cash_get_balance: toolBase({
       name: 'cash_get_balance',
       description: `Retrieve the cash balance of a specified account.
@@ -184,7 +185,7 @@ export async function getToolsFromCaishen({ sdk }: { sdk: CaishenSDK }) {
     Inputs (JSON string):
     - wallet: object
       - account: number (required)
-      - chainType: string (required, e.g., "EVM", "SOLANA")
+      - chainType: string (required, e.g., "ETHEREUM", "SOLANA")
     - payload: object
       - confirmationCode: string (required) — swap route confirmation code
 

@@ -1,10 +1,10 @@
 import { tool, ToolSet } from 'ai';
 import { z } from 'zod';
 import { CaishenSDK } from '../../caishen';
-import { getToolsFromCaishen } from '../../tools/getToolsFromCaishen';
+import { getTools } from '../../tools/get-tools';
 
 export async function createVercelAITools({ sdk }: { sdk: CaishenSDK }) {
-  const tools = await getToolsFromCaishen({ sdk });
+  const tools = await getTools({ sdk });
 
   const vercelAITools = Object.values(tools).reduce((acc, t) => {
     acc[t.name] = tool({
