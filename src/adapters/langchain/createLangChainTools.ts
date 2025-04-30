@@ -1,10 +1,10 @@
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { CaishenSDK } from '../../caishen';
-import { getToolsFromCaishen } from '../../tools/getToolsFromCaishen';
+import { getTools } from '../../tools/get-tools';
 
 export async function createLangchainTools({ sdk }: { sdk: CaishenSDK }) {
-  const tools = await getToolsFromCaishen({ sdk });
+  const tools = getTools({ sdk });
 
   return Object.values(tools).map((t) =>
     tool(
