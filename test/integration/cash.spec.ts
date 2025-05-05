@@ -1,4 +1,5 @@
 import 'dotenv/config';
+// @ts-ignore
 import env from 'env-var';
 import * as assert from 'assert';
 

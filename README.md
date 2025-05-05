@@ -87,7 +87,6 @@ In this case:
 - You then pass this encrypted token into `connectAsUser`.
 
 #### 💡 Example
-
 **Backend-side (Node.js):**
 
 ```ts
@@ -141,7 +140,6 @@ await sdk.connectAsAgent({
 | Name        | Type     | Required | Description |
 |-------------|----------|----------|-------------|
 | `chainType` | string   | ✅        | Blockchain type (`ETHEREUM`, `SOLANA`, etc.) |
-| `chainId`   | number   | ❌        | Optional chain ID (e.g., 1 for Ethereum) |
 | `account`   | number   | ✅        | Account index or identifier |
 
 
@@ -157,8 +155,7 @@ await sdk.connectAsAgent({
 ```ts
 const wallet = await sdk.crypto.getWallet({
   chainType: 'ETHEREUM',
-  chainId: 1,
-  account: 0,
+  account: 1,
 });
 ```
 
@@ -198,8 +195,8 @@ const txHash = await sdk.crypto.send({
     account: 1,
     chainType: "ETHEREUM",
     /**
-     * If not provided, our rpc will be used. 
-     * NOTE: feature is not supported for Bitcoin based blockchains 
+     * If not provided, our Caishen's rpc will be used. 
+     * NOTE: currently custom RPC feature is not supported for Bitcoin based blockchains 
      * (such as Bitcoin, Litecoin, Dogecoin, Dashcoin)
      * 
      * Specify ws rpc for Cardano & Ripple,  
@@ -219,9 +216,33 @@ const txHash = await sdk.crypto.send({
 const native = await sdk.crypto.getBalance({ wallet, payload: {} });
 const dai = await sdk.crypto.getBalance({
   wallet,
-  payload: { token: '0x6B1754...' }, // if not provided, native token is used
+  payload: { token: '0x6B1754...' },
 });
 ```
+
+### ✍️ Sign and Send transaction
+
+```ts
+import { serializeTransaction, parseGwei, parseEther } from 'viem'
+
+const serializedTransaction = serializeTransaction({
+  chainId: 1,
+  gas: 21001n,
+  maxFeePerGas: parseGwei('20'),
+  maxPriorityFeePerGas: parseGwei('2'),
+  nonce: 69,
+  to: "0x1234512345123451234512345123451234512345",
+  value: parseEther('0.01'),
+})
+
+const transactionHash = await sdk.crypto.signAndSend({ 
+  wallet, 
+  payload: {
+    serializedTransaction,
+  }
+});
+```
+See more examples [here](https://github.com/CaishenTech/caishen-sdk/tree/main/examples/sign-and-send/).
 
 ---
 

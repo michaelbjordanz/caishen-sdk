@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import * as assert from 'assert';
+// @ts-ignore
 import env from 'env-var';
 
 import { CaishenSDK } from '../../src';
