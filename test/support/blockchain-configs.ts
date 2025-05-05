@@ -24,7 +24,6 @@ export const BLOCKCHAIN_CONFIGS = [
     transferDest: {
       address: 'LTDd2ZXZWgMVVW2hWcra1NTW1rZkAKd4aL',
     },
-    minUnits4Send: 5460,
   },
   {
     type: 'TRON',
@@ -88,7 +87,6 @@ export const BLOCKCHAIN_CONFIGS = [
     transferDest: {
       address: 'addr1v83jwzvhv4xfkfdwne2f0tgg64994kq929zql0y6frsqrhccnkyfx',
     },
-    minUnits4Send: 1000000
   },
   {
     type: 'SOLANA',
