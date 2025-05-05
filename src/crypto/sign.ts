@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { BASE_URL, IWalletAccount } from '../constants';
 
+import { BASE_URL, IWalletAccount } from '../constants';
 import type { CaishenSDK } from '../caishen';
 
 /*
@@ -15,10 +15,10 @@ export async function signAndSend(
   }: {
     wallet: IWalletAccount;
     payload: {
-      token?: string;
-      amount: string;
-      toAddress: string;
-      memo?: number;
+      /**
+       * Serialized transaction (e.g. with [serializeTransaction]{@link https://viem.sh/docs/utilities/serializeTransaction.html}) - Hex
+       */
+      serializedTransaction: string;
     };
   },
 ): Promise<string> {
@@ -28,7 +28,7 @@ export async function signAndSend(
 
   try {
     const authToken = this.userToken || this.agentToken;
-    const url = `${BASE_URL}/api/crypto/send`;
+    const url = `${BASE_URL}/api/crypto/signAndSend`;
     const response = await axios.post(
       url,
       {
@@ -44,7 +44,7 @@ export async function signAndSend(
     return response.data;
   } catch (error: any) {
     throw new Error(
-      `Failed to send transaction: ${error.response?.data?.message || error.message}`,
+      `Failed to sign and send transaction: ${error.response?.data?.message || error.message}`,
     );
   }
 }

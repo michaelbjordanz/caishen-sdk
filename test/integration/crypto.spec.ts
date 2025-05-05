@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import * as assert from 'assert';
+// @ts-ignore
 import env from 'env-var';
 
 import { CaishenSDK } from '../../src';
@@ -70,7 +71,7 @@ describe('Integration: SDK Crypto', function () {
               chainType: config.type,
             },
             payload: {
-              token: ('address' in token && token.address) || undefined,
+              token: ('address' in token && token.address as string) || undefined,
             },
           });
 
@@ -100,7 +101,7 @@ describe('Integration: SDK Crypto', function () {
                 undefined,
             },
             payload: {
-              token: ('address' in token && token.address) || undefined,
+              token: ('address' in token && token.address as string) || undefined,
               toAddress: config.transferDest.address,
               memo: config.transferDest.memo,
               amount: minUnits4Send,
