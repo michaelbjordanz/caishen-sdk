@@ -1,8 +1,8 @@
 import { Tool } from 'langchain/tools';
-import { CaishenSDK } from '../../caishen';
+import { CaishenSDK } from '../../../caishen';
 
-export class CaishenBalanceTool extends Tool {
-  name = 'crypto_balance_other';
+export class CaishenBalanceOtherTool extends Tool {
+  name = 'caishen_balance_other';
   description = `Get the balance of ANOTHER wallet (not your own) or token account on Caishen.`;
 
   constructor(private sdk: CaishenSDK) {

@@ -14,6 +14,18 @@ export const BLOCKCHAIN_CONFIGS = [
     },
   },
   {
+    type: 'LITECOIN',
+    name: 'LITECOIN',
+    tokens: [
+      {
+        symbol: 'LTC',
+      },
+    ],
+    transferDest: {
+      address: 'LTDd2ZXZWgMVVW2hWcra1NTW1rZkAKd4aL',
+    },
+  },
+  {
     type: 'TRON',
     name: 'TRON',
     tokens: [
