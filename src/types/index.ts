@@ -20,12 +20,20 @@ export interface InitCaishenSDK {
   projectKey: string;
 }
 
-export interface ConnectAsAgentPayload {
+export interface ConnectAsPayload {
+  /**
+   * Determines whether to store authorization token inside CaishenSDK class or not.
+   * Defaults to `true`.
+   */
+  storeAuthToken?: boolean;
+}
+
+export interface ConnectAsAgentPayload extends ConnectAsPayload {
   agentId?: string;
   userId?: string;
 }
 
-export interface ConnectAsUserPayload {
+export interface ConnectAsUserPayload extends ConnectAsPayload {
   provider?: string | 'custom';
   token: string;
 }

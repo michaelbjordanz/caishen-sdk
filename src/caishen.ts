@@ -49,9 +49,10 @@ export class CaishenSDK {
     const {
       agentId,
       userId,
+      storeAuthToken = true,
     } = payload;
 
-    if (this.connectedAs) {
+    if (storeAuthToken && this.connectedAs) {
       throw new Error(
         'Already connected as a user or agent. Create a new instance to connect again.',
       );
@@ -63,9 +64,14 @@ export class CaishenSDK {
         { agentId, userId },
         { headers: { projectKey: this.projectKey } },
       );
-      this.agentToken = response.data.agentToken;
-      this.connectedAs = 'agent';
-      return this.agentToken;
+      const authToken = response.data.agentToken;
+
+      if (storeAuthToken) {
+        this.userToken = authToken;
+        this.connectedAs = 'agent';
+      }
+
+      return authToken;
     } catch (error: any) {
       throw new Error(
         `Agent authentication failed: ${
@@ -77,11 +83,12 @@ export class CaishenSDK {
 
   async connectAsUser(payload: ConnectAsUserPayload): Promise<string> {
     const {
-      provider= 'custom',
       token,
+      provider= 'custom',
+      storeAuthToken = true,
     } = payload;
 
-    if (this.connectedAs) {
+    if (storeAuthToken && this.connectedAs) {
       throw new Error(
         'Already connected as a user or agent. Create a new instance to connect again.',
       );
@@ -93,9 +100,14 @@ export class CaishenSDK {
         { provider, token },
         { headers: { projectKey: this.projectKey } },
       );
-      this.userToken = response.data.userToken;
-      this.connectedAs = 'user';
-      return this.userToken;
+      const authToken = response.data.userToken;
+
+      if (storeAuthToken) {
+        this.userToken = authToken;
+        this.connectedAs = 'user';
+      }
+
+      return authToken;
     } catch (error: any) {
       throw new Error(
         `User authentication failed: ${
