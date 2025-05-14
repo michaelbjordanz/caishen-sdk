@@ -4,7 +4,6 @@ export const CryptoSendSchema = z.object({
   address: z.string().describe('The wallet address to send from'),
   chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
   chainId: z.number().optional().describe('The chain ID for the blockchain'),
-  publicKey: z.string().optional().describe('The public key of the wallet'),
   account: z.number().describe('The account number'),
   toAddress: z.string().describe('The recipient address to send to'),
   amount: z.string().describe('The amount to send'),
@@ -13,6 +12,14 @@ export const CryptoSendSchema = z.object({
     .optional()
     .describe('Token address or symbol (send gas token if not specified)'),
   memo: z.number().optional().describe('Transaction memo (for Solana, etc.)'),
+});
+
+export const CryptoSignAndSendSchema = z.object({
+  address: z.string().describe('The wallet address to send from'),
+  chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
+  chainId: z.number().optional().describe('The chain ID for the blockchain'),
+  account: z.number().describe('The account number'),
+  serializedTransaction: z.string().describe('Serialized transaction into Hex format'),
 });
 
 export const CryptoGetBalanceSchema = z.object({

@@ -66,6 +66,7 @@ You can authenticate as either a **user** or an **agent**.
 await sdk.connectAsUser({
   token: 'USER TOKEN',
   provider: 'USER PROVIDER',
+  storeAuthToken: true, // should we store auth token inside CaishenSDK instance? By default: true
 });
 ```
 
@@ -120,7 +121,8 @@ jwt.verify(token, projectSecret); // -> { id: string }
 ```ts
 await sdk.connectAsAgent({
   agentId: 'AGENT ID',
-  userId: 'USER ID',
+  userId: 'USER ID', // NOTE: userId cannot be provided without an agentId
+  storeAuthToken: true, // should we store auth token inside CaishenSDK instance? By default: true
 });
 ```
 
@@ -242,7 +244,6 @@ const transactionHash = await sdk.crypto.signAndSend({
   }
 });
 ```
-See more examples [here](https://github.com/CaishenTech/caishen-sdk/tree/main/examples/sign-and-send/).
 
 ---
 

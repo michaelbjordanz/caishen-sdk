@@ -3,6 +3,7 @@ import { BASE_URL } from './constants';
 
 import * as CASH from './cash';
 import * as CRYPTO from './crypto';
+import { ConnectAsAgentPayload, ConnectAsUserPayload, InitCaishenSDK } from './types';
 
 type ModuleBind = {
   [key: string]: unknown;
@@ -12,7 +13,7 @@ type BoundFunctions<T> = {
   [K in keyof T as T[K] extends (...args: any[]) => any
     ? K
     : never]: T[K] extends (...args: infer A) => infer R
-    ? (this: any, ...args: A) => R
+    ? (...args: A) => R
     : never;
 };
 
@@ -25,12 +26,8 @@ export class CaishenSDK {
   cash: BoundFunctions<typeof CASH>;
   crypto: BoundFunctions<typeof CRYPTO>;
 
-  constructor({ projectKey }: { projectKey: string }) {
-    if (!projectKey) {
-      throw new Error('Project key is required');
-    }
-
-    this.projectKey = projectKey;
+  constructor(initData: InitCaishenSDK) {
+    this.projectKey = initData.projectKey;
     this.cash = this.bindModule(CASH);
     this.crypto = this.bindModule(CRYPTO);
   }
@@ -48,27 +45,33 @@ export class CaishenSDK {
     return bound as BoundFunctions<T>;
   }
 
-  async connectAsAgent({
-    agentId,
-    userId,
-  }: {
-    agentId?: string;
-    userId?: string;
-  }): Promise<string> {
-    if (this.connectedAs) {
+  async connectAsAgent(payload: ConnectAsAgentPayload): Promise<string> {
+    const {
+      agentId,
+      userId,
+      storeAuthToken = true,
+    } = payload;
+
+    if (storeAuthToken && this.connectedAs) {
       throw new Error(
         'Already connected as a user or agent. Create a new instance to connect again.',
       );
     }
+
     try {
       const response = await axios.post<{ agentToken: string }>(
         `${BASE_URL}/auth/agents/connect`,
         { agentId, userId },
         { headers: { projectKey: this.projectKey } },
       );
-      this.agentToken = response.data.agentToken;
-      this.connectedAs = 'agent';
-      return this.agentToken;
+      const authToken = response.data.agentToken;
+
+      if (storeAuthToken) {
+        this.userToken = authToken;
+        this.connectedAs = 'agent';
+      }
+
+      return authToken;
     } catch (error: any) {
       throw new Error(
         `Agent authentication failed: ${
@@ -78,27 +81,33 @@ export class CaishenSDK {
     }
   }
 
-  async connectAsUser({
-    provider,
-    token,
-  }: {
-    provider: string;
-    token: string;
-  }): Promise<string> {
-    if (this.connectedAs) {
+  async connectAsUser(payload: ConnectAsUserPayload): Promise<string> {
+    const {
+      token,
+      provider= 'custom',
+      storeAuthToken = true,
+    } = payload;
+
+    if (storeAuthToken && this.connectedAs) {
       throw new Error(
         'Already connected as a user or agent. Create a new instance to connect again.',
       );
     }
+
     try {
       const response = await axios.post<{ userToken: string }>(
         `${BASE_URL}/auth/users/connect`,
         { provider, token },
         { headers: { projectKey: this.projectKey } },
       );
-      this.userToken = response.data.userToken;
-      this.connectedAs = 'user';
-      return this.userToken;
+      const authToken = response.data.userToken;
+
+      if (storeAuthToken) {
+        this.userToken = authToken;
+        this.connectedAs = 'user';
+      }
+
+      return authToken;
     } catch (error: any) {
       throw new Error(
         `User authentication failed: ${

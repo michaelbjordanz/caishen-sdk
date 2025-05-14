@@ -1,100 +1,41 @@
 import axios from 'axios';
 
-import { BASE_URL, IWalletAccount } from '../constants';
+import { BASE_URL } from '../constants';
 import type { CaishenSDK } from '../caishen';
+import { BaseRequest, SendTransactionPayload, WalletAccount } from '../types';
 
-/*
-  if payload?.token is undefined or null, send gas token.
-  Otherise - send tokens
-*/
+/**
+ * Execute basic token transfer.
+ * @param request
+ */
 export async function send(
   this: CaishenSDK,
-  {
+  request: BaseRequest<WalletAccount, SendTransactionPayload>
+): Promise<string> {
+  const {
     wallet,
     payload,
-  }: {
-    wallet: IWalletAccount;
-    payload: {
-      token?: string;
-      amount: string;
-      toAddress: string;
-      memo?: number;
-    };
-  },
-): Promise<string> {
-  if (!this.userToken && !this.agentToken) {
-    throw new Error('Authentication required. Connect as user or agent first.');
+    authToken = this.userToken || this.agentToken,
+  } = request;
+
+  if (!authToken) {
+    throw new Error('Authentication token required. Connect as user/agent first or pass authorization token separately.');
   }
 
-  try {
-    const authToken = this.userToken || this.agentToken;
-    const url = `${BASE_URL}/api/crypto/send`;
-    const response = await axios.post(
-      url,
-      {
-        wallet,
-        payload,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    throw new Error(
-      `Failed to send transaction: ${error.response?.data?.message || error.message}`,
-    );
-  }
-}
-
-/*
-  if payload?.token is undefined or null, get native token balance.
-  Otherise - get token balance
-*/
-export async function getBalance(
-  this: CaishenSDK,
-  {
-    wallet,
-    payload,
-  }: {
-    wallet: IWalletAccount;
-    payload: { token?: string };
-  },
-): Promise<string> {
-  if (!this.userToken && !this.agentToken) {
-    throw new Error('Authentication required. Connect as user or agent first.');
-  }
-
-  try {
-    const authToken = this.userToken || this.agentToken;
-    const url = `${BASE_URL}/api/crypto/balance`;
-    const response = await axios.get(url, {
-      params: {
-        ...wallet,
-        tokenAddress: payload.token,
-      },
+  const url = `${BASE_URL}/api/crypto/send`;
+  const response = await axios.post(
+    url,
+    {
+      wallet,
+      payload,
+    },
+    {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
-    });
-    return response.data;
-  } catch (error: any) {
-    throw new Error('Failed to get balance');
-  }
+    },
+  );
+
+  return response.data;
 }
 
-/*
-  use Dune API to get all token balances for address
-*/
-export async function getTokenBalances(
-  this: CaishenSDK,
-  {
-    wallet,
-  }: {
-    wallet: IWalletAccount;
-  },
-) {
-  const url = `${BASE_URL}/api/crypto/balances`;
-}

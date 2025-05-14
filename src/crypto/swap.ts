@@ -1,127 +1,80 @@
 import axios from 'axios';
-import { BASE_URL, ChainType, IWalletAccount } from '../constants';
-import { Token } from '../cash/schema';
+import { BASE_URL, ChainType } from '../constants';
 
 import type { CaishenSDK } from '../caishen';
-
-export type TokenWithPrice = Token & {
-  priceUSD: string;
-};
-
-export interface RouteOutput {
-  id: string;
-
-  fromChainId: number;
-  fromAmountUSD: string;
-  fromAmount: string;
-  fromToken: TokenWithPrice;
-  fromAddress?: string;
-
-  toChainId: number;
-  toAmountUSD: string;
-  toAmount: string;
-  toAmountMin: string;
-  toToken: TokenWithPrice;
-  toAddress?: string;
-
-  confirmationCode: string;
-}
-
-export interface RouteExecutedResponse {
-  transactionStatus: string;
-  transactionHash: string | null;
-  fees: string | null;
-  error: string | null;
-}
+import {
+  BaseRequest,
+  ExecuteSwapPayload,
+  GetSwapPayload,
+  RouteExecutedResponse,
+  RouteOutput,
+  WalletAccount,
+} from '../types';
 
 export async function swap(
   this: CaishenSDK,
-  {
+  request: BaseRequest<
+    Pick<WalletAccount, 'account' | 'chainType'>,
+    ExecuteSwapPayload
+  >
+): Promise<RouteExecutedResponse> {
+  const {
     wallet,
     payload,
-  }: {
-    wallet: Pick<IWalletAccount, 'account' | 'chainType'>;
-    payload: {
-      confirmationCode: string;
-    };
-  },
-): Promise<RouteExecutedResponse> {
-  const authToken = this.userToken || this.agentToken;
+    authToken = this.userToken || this.agentToken,
+  } = request;
 
   if (!authToken) {
-    throw new Error('Authentication required. Connect as user or agent first.');
+    throw new Error('Authentication token required. Connect as user/agent first or pass authorization token separately.');
   }
 
-  try {
-    const url = `${BASE_URL}/api/crypto/swap`;
-    const { data: routeOutput } = await axios.post<RouteExecutedResponse>(
-      url,
-      {
-        wallet,
-        payload,
+  const url = `${BASE_URL}/api/crypto/swap`;
+  const { data: routeOutput } = await axios.post<RouteExecutedResponse>(
+    url,
+    {
+      wallet,
+      payload,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      },
-    );
+    },
+  );
 
-    return routeOutput;
-  } catch (error: any) {
-    throw new Error(
-      `Failed to execute the swap route: ${error?.response?.data?.message || error?.message}`,
-    );
-  }
+  return routeOutput;
 }
 
 export async function getSwapRoute(
   this: CaishenSDK,
-  {
+  request: BaseRequest<
+    Pick<WalletAccount, 'account'>,
+    GetSwapPayload
+  >
+): Promise<RouteOutput> {
+  const {
     wallet,
     payload,
-  }: {
-    wallet: Pick<IWalletAccount, 'account'>;
-    payload: {
-      amount: string;
-      from: {
-        tokenAddress: string;
-        chainType: ChainType;
-        chainId?: number;
-      };
-      to: {
-        tokenAddress: string;
-        chainType: ChainType;
-        chainId?: number;
-      };
-    };
-  },
-): Promise<RouteOutput> {
+  } = request
   const authToken = this.userToken || this.agentToken;
 
   if (!authToken) {
     throw new Error('Authentication required. Connect as user or agent first.');
   }
 
-  try {
-    const url = `${BASE_URL}/api/crypto/swap-route`;
-    const { data: routeOutput } = await axios.post<RouteOutput>(
-      url,
-      {
-        wallet,
-        payload,
+  const url = `${BASE_URL}/api/crypto/swap-route`;
+  const { data: routeOutput } = await axios.post<RouteOutput>(
+    url,
+    {
+      wallet,
+      payload,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      },
-    );
+    },
+  );
 
-    return routeOutput;
-  } catch (error: any) {
-    throw new Error(
-      `Failed to get route to execute: ${error?.response?.data?.message || error?.message}`,
-    );
-  }
+  return routeOutput;
 }

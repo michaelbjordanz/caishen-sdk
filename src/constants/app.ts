@@ -1,7 +1,4 @@
-import ChainIds from './chain-ids';
-
 export const BASE_URL = 'https://build.caishen.tech';
-
 export enum ChainType {
   BITCOIN = 'BITCOIN',
   LITECOIN = 'LITECOIN',
@@ -17,11 +14,4 @@ export enum ChainType {
   XRP = 'XRP',
   CARDANO = 'CARDANO',
   COSMOS = 'COSMOS',
-}
-
-export interface IWalletAccount {
-  account: number;
-  chainType: string;
-  chainId?: ChainIds;
-  rpc?: string;
 }
