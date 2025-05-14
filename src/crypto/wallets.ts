@@ -12,7 +12,7 @@ export async function getWallet(
     account: number | number[];
     authToken?: string;
   },
-): Promise<WalletInfo> {
+): Promise<WalletInfo | WalletInfo[]> {
   const {
     chainType,
     chainId,
@@ -32,6 +32,7 @@ export async function getWallet(
     params: { chainType, account, chainId },
     headers: { Authorization: `Bearer ${authToken}` },
   });
+
   return response.data;
 }
 
