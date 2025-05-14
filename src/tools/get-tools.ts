@@ -8,9 +8,9 @@ import {
 import {
   CryptoGetBalanceSchema,
   CryptoGetSwapRouteSchema,
-  CryptoSendSchema,
+  CryptoSendSchema, CryptoSignAndSendSchema,
   CryptoSwapSchema,
-} from '../crypto/schema';
+} from '../schema/schema';
 import { toolBase } from './ToolBase';
 import { ChainType } from '../constants';
 import { Tools } from './interfaces';
@@ -98,7 +98,7 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
       Inputs (JSON string):
       - wallet: object
         - address: string (required)
-        - chainType: string (required, e.g., "EVM", "SOLANA")
+        - chainType: string (required, e.g., "ETHEREUM", "SOLANA")
         - chainId: number (optional)
         - publicKey: string (optional)
         - account: number (optional)
@@ -137,7 +137,7 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
       Inputs (JSON string):
       - wallet: object
         - address: string (required)
-        - chainType: string (required, e.g., "EVM", "SOLANA")
+        - chainType: string (required, e.g., "ETHEREUM", "SOLANA")
         - chainId: number (optional)
         - publicKey: string (optional)
         - account: number (optional)
@@ -154,7 +154,6 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
           address: params.address,
           chainType: params.chainType,
           chainId: params.chainId,
-          publicKey: params.publicKey,
           account: params.account,
         };
         const payload = {
@@ -172,6 +171,47 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
         }
 
         return await sdk.crypto.send({
+          wallet,
+          payload,
+        });
+      },
+    }),
+
+    sign_and_send: toolBase({
+      name: 'send_crypto',
+      description: `Signs transaction and broadcasts crypto transaction to a network.
+  
+      Inputs (JSON string):
+      - wallet: object
+        - address: string (required)
+        - chainType: string (required, e.g., "ETHEREUM", "SOLANA")
+        - chainId: number (optional)
+        - publicKey: string (optional)
+        - account: number (optional)
+      - payload: object
+        - serializedTransaction: string (required) — Serialized transaction (e.g. with [serializeTransaction]{@link https://viem.sh/docs/utilities/serializeTransaction.html}) - Hex
+
+    Returns the transaction signature as a string.`,
+      parameters: CryptoSignAndSendSchema,
+      execute: async (params) => {
+        const wallet = {
+          address: params.address,
+          chainType: params.chainType,
+          chainId: params.chainId,
+          account: params.account,
+        };
+        const payload = {
+          serializedTransaction: params.serializedTransaction,
+        };
+
+        if (!wallet || !wallet.address || !wallet.chainType) {
+          throw new Error('wallet.address and wallet.chainType are required');
+        }
+        if (!payload || !payload.serializedTransaction) {
+          throw new Error('payload.serializedTransaction is required');
+        }
+
+        return await sdk.crypto.signAndSend({
           wallet,
           payload,
         });
@@ -225,7 +265,7 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
         - amount: string (required) — amount to swap (in token units)
         - from: object (required)
           - tokenAddress: string (required)
-          - chainType: string (required, e.g., "EVM", "SOLANA")
+          - chainType: string (required, e.g., "ETHEREUM", "SOLANA")
           - chainId: number (optional)
         - to: object (required)
           - tokenAddress: string (required)
