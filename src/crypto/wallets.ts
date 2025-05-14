@@ -4,70 +4,62 @@ import PublicRpcEndpoints from '../constants/public-rpc-endpoints';
 import axios from 'axios';
 
 import type { CaishenSDK } from '../caishen';
+import { WalletAccount, WalletInfo } from '../types';
 
 export async function getWallet(
   this: CaishenSDK,
-  {
+  walletAccount: Pick<WalletAccount, 'chainId' | 'chainType'> & {
+    account: number | number[];
+    authToken?: string;
+  },
+): Promise<WalletInfo | WalletInfo[]> {
+  const {
     chainType,
     chainId,
     account,
-  }: {
-    chainType: string;
-    chainId?: number;
-    account: number;
-  },
-): Promise<{
-  account: number;
-  address: string;
-  chainType: string;
-  publicKey: string;
-  privateKey?: string;
-}> {
+    authToken = this.agentToken || this.userToken
+  } = walletAccount
+
   if (!chainType || account === undefined) {
     throw new Error('chainType and account number are required');
   }
-  const authToken = this.agentToken || this.userToken;
+
   if (!authToken) {
-    throw new Error('Authenticate as an agent or user before fetching wallets');
+    throw new Error('Authentication token required. Connect as user/agent first or pass authorization token separately.');
   }
-  try {
-    const response = await axios.get(`${BASE_URL}/api/crypto/wallets`, {
-      params: { chainType, account, chainId },
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error: any) {
-    throw new Error(
-      `Failed to get wallet: ${error.response?.data?.message || error.message}`,
-    );
-  }
+
+  const response = await axios.get(`${BASE_URL}/api/crypto/wallets`, {
+    params: { chainType, account, chainId },
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+
+  return response.data;
 }
 
 export async function getSupportedChainTypes(
   this: CaishenSDK,
+  authToken?: string
 ): Promise<string[]> {
-  try {
-    const authToken = this.agentToken || this.userToken;
-    if (!authToken) {
-      throw new Error(
-        'Authenticate as an agent or user before fetching wallets',
-      );
-    }
-    const response = await axios.get(
-      `${BASE_URL}/api/crypto/wallets/supported`,
-      {
-        headers: { Authorization: `Bearer ${authToken}` },
-      },
-    );
-    return response.data;
-  } catch (err) {
-    throw new Error('Failed to get supported chain types');
+  const _authToken = authToken || this.agentToken || this.userToken;
+
+  if (!_authToken) {
+    throw new Error('Authentication token required. Connect as user/agent first or pass authorization token separately.');
   }
+
+  const response = await axios.get(
+    `${BASE_URL}/api/crypto/wallets/supported`,
+    {
+      headers: { Authorization: `Bearer ${_authToken}` },
+    },
+  );
+
+  return response.data;
 }
 
 export async function getRPC(chainId: ChainIds) {
   if (!PublicRpcEndpoints[chainId]) {
     throw new Error(`RPC for ${chainId} not supported`);
   }
+
   return PublicRpcEndpoints[chainId];
 }
