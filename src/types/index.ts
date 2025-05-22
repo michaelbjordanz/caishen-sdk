@@ -48,6 +48,13 @@ export interface SendTransactionPayload {
   memo?: number;
 }
 
+export interface SignPayload {
+  /**
+   * Either serialized transaction or any transaction data to issue signature.
+   */
+  transactionData: string
+}
+
 export interface SignAndSendPayload {
   /**
    * Serialized transaction (e.g. with [serializeTransaction]{@link https://viem.sh/docs/utilities/serializeTransaction.html}) - Hex
