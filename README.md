@@ -16,7 +16,7 @@
   - Solana (via `@solana/web3.js`)
   - Cardano (via `@emurgo/cardano-serialization-lib`)
   - Sui, NEAR, Ripple, Tron, TON, Aptos
-- 🔒 Secure wallet managdement
+- 🔒 Secure wallet management
 - ⚙️ Type-safe TypeScript APIs
 - 💸 Token operations: Send, Balance, Swap, Deposit, Withdraw
 - Cash operations: Send, Deposit, Withdraw
