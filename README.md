@@ -16,7 +16,7 @@
   - Solana (via `@solana/web3.js`)
   - Cardano (via `@emurgo/cardano-serialization-lib`)
   - Sui, NEAR, Ripple, Tron, TON, Aptos
-- 🔒 Secure wallet management
+- 🔒 Secure wallet managdement
 - ⚙️ Type-safe TypeScript APIs
 - 💸 Token operations: Send, Balance, Swap, Deposit, Withdraw
 - Cash operations: Send, Deposit, Withdraw
@@ -66,7 +66,6 @@ You can authenticate as either a **user** or an **agent**.
 await sdk.connectAsUser({
   token: 'USER TOKEN',
   provider: 'USER PROVIDER',
-  storeAuthToken: true, // should we store auth token inside CaishenSDK instance? By default: true
 });
 ```
 
@@ -116,13 +115,39 @@ jwt.verify(token, projectSecret); // -> { id: string }
 
 ---
 
+
+### Issue authorization token
+
+Simple way to issue an authorization token for the Caishen API without storing it in the CaishenSDK instance.
+Useful primarily for authorizing multiple users independently on your back-end side.
+
+##### Example:
+```ts
+const authToken = await sdk.issueAuthToken({
+  connectAs: 'user',
+  provider: 'custom',
+  token: 'ENCRYPTED_JWT_TOKEN',
+});
+
+const balance = await sdk.crypto.getBalance({
+  wallet: {
+    account: 1,
+    chainId: 1,
+    chainType: 'ETHEREUM',
+  },
+  authToken,
+});
+
+console.log(`Balance ETH: ${balance}`)
+```
+
+
 ### Connect as Agent
 
 ```ts
 await sdk.connectAsAgent({
   agentId: 'AGENT ID',
   userId: 'USER ID', // NOTE: userId cannot be provided without an agentId
-  storeAuthToken: true, // should we store auth token inside CaishenSDK instance? By default: true
 });
 ```
 
@@ -237,10 +262,33 @@ const serializedTransaction = serializeTransaction({
   value: parseEther('0.01'),
 })
 
-const transactionHash = await sdk.crypto.signAndSend({ 
-  wallet, 
+const transactionHash = await sdk.crypto.signAndSend({
+  wallet,
   payload: {
     serializedTransaction,
+  }
+});
+```
+
+### ✍️ Sign transaction
+
+```ts
+import { serializeTransaction, parseGwei, parseEther } from 'viem'
+
+const serializedTransaction = serializeTransaction({
+  chainId: 1,
+  gas: 21001n,
+  maxFeePerGas: parseGwei('20'),
+  maxPriorityFeePerGas: parseGwei('2'),
+  nonce: 69,
+  to: "0x1234512345123451234512345123451234512345",
+  value: parseEther('0.01'),
+})
+
+const transactionHash = await sdk.crypto.sign({ 
+  wallet, 
+  payload: {
+    transactionData: serializedTransaction,
   }
 });
 ```

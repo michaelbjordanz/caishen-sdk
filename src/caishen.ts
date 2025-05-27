@@ -3,7 +3,7 @@ import { BASE_URL } from './constants';
 
 import * as CASH from './cash';
 import * as CRYPTO from './crypto';
-import { ConnectAsAgentPayload, ConnectAsUserPayload, InitCaishenSDK } from './types';
+import { ConnectAsAgentPayload, ConnectAsUserPayload, InitCaishenSDK, IssueAuthTokenPayload } from './types';
 
 type ModuleBind = {
   [key: string]: unknown;
@@ -45,68 +45,81 @@ export class CaishenSDK {
     return bound as BoundFunctions<T>;
   }
 
+  /**
+   * Connects you as agent and stores authorization token inside the current class instance.
+   * @param payload
+   */
   async connectAsAgent(payload: ConnectAsAgentPayload): Promise<string> {
     const {
       agentId,
       userId,
-      storeAuthToken = true,
     } = payload;
 
-    if (storeAuthToken && this.connectedAs) {
+    if (this.connectedAs) {
       throw new Error(
         'Already connected as a user or agent. Create a new instance to connect again.',
       );
     }
 
+    const authToken = await this.issueAuthToken({ connectAs: 'agent', agentId, userId });
+
+    this.userToken = authToken;
+    this.connectedAs = 'agent';
+
+    return authToken;
+  }
+
+  /**
+   * Connects you as user and stores authorization token inside the current class instance.
+   *
+   * @param payload
+   */
+  async connectAsUser(payload: ConnectAsUserPayload): Promise<string> {
+    const {
+      token,
+      provider = 'custom',
+    } = payload;
+
+    if (this.connectedAs) {
+      throw new Error(
+        'Already connected as a user or agent. Create a new instance to connect again.',
+      );
+    }
+
+    const authToken = await this.issueAuthToken({ connectAs: 'user', provider, token });
+
+    this.userToken = authToken;
+    this.connectedAs = 'user';
+
+    return authToken;
+  }
+
+  /**
+   * Works mostly the same way as `CaishenSDK` and issues authorization token for Caishen API
+   * without storing it into the current class instance.
+   * @param payload
+   */
+  async issueAuthToken(payload: IssueAuthTokenPayload): Promise<string> {
     try {
+      if (payload.connectAs === 'user' ) {
+        const { provider = 'custom', token } = payload
+        const response = await axios.post<{ userToken: string }>(
+          `${BASE_URL}/auth/users/connect`,
+          { provider, token },
+          { headers: { projectKey: this.projectKey } },
+        );
+        const authToken = response.data.userToken;
+        return authToken;
+      }
+
+      const { userId, agentId } = payload
       const response = await axios.post<{ agentToken: string }>(
         `${BASE_URL}/auth/agents/connect`,
         { agentId, userId },
         { headers: { projectKey: this.projectKey } },
       );
+
       const authToken = response.data.agentToken;
-
-      if (storeAuthToken) {
-        this.userToken = authToken;
-        this.connectedAs = 'agent';
-      }
-
-      return authToken;
-    } catch (error: any) {
-      throw new Error(
-        `Agent authentication failed: ${
-          error.response?.data?.message || error.message
-        }`,
-      );
-    }
-  }
-
-  async connectAsUser(payload: ConnectAsUserPayload): Promise<string> {
-    const {
-      token,
-      provider= 'custom',
-      storeAuthToken = true,
-    } = payload;
-
-    if (storeAuthToken && this.connectedAs) {
-      throw new Error(
-        'Already connected as a user or agent. Create a new instance to connect again.',
-      );
-    }
-
-    try {
-      const response = await axios.post<{ userToken: string }>(
-        `${BASE_URL}/auth/users/connect`,
-        { provider, token },
-        { headers: { projectKey: this.projectKey } },
-      );
-      const authToken = response.data.userToken;
-
-      if (storeAuthToken) {
-        this.userToken = authToken;
-        this.connectedAs = 'user';
-      }
-
       return authToken;
     } catch (error: any) {
       throw new Error(
