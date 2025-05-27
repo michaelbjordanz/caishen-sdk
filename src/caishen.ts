@@ -61,12 +61,25 @@ export class CaishenSDK {
       );
     }
 
-    const authToken = await this.issueAuthToken({ connectAs: 'agent', agentId, userId });
+    try {
+      const response = await axios.post<{ agentToken: string }>(
+        `${BASE_URL}/auth/agents/connect`,
+        { agentId, userId },
+        { headers: { projectKey: this.projectKey } },
+      );
+      const authToken = response.data.agentToken;
 
-    this.userToken = authToken;
-    this.connectedAs = 'agent';
+      this.userToken = authToken;
+      this.connectedAs = 'agent';
 
-    return authToken;
+      return authToken;
+    } catch (error: any) {
+      throw new Error(
+        `Agent authentication failed: ${
+          error.response?.data?.message || error.message
+        }`,
+      );
+    }
   }
 
   /**
@@ -77,7 +90,7 @@ export class CaishenSDK {
   async connectAsUser(payload: ConnectAsUserPayload): Promise<string> {
     const {
       token,
-      provider = 'custom',
+      provider= 'custom',
     } = payload;
 
     if (this.connectedAs) {
@@ -86,16 +99,29 @@ export class CaishenSDK {
       );
     }
 
-    const authToken = await this.issueAuthToken({ connectAs: 'user', provider, token });
+    try {
+      const response = await axios.post<{ userToken: string }>(
+        `${BASE_URL}/auth/users/connect`,
+        { provider, token },
+        { headers: { projectKey: this.projectKey } },
+      );
+      const authToken = response.data.userToken;
 
-    this.userToken = authToken;
-    this.connectedAs = 'user';
+      this.userToken = authToken;
+      this.connectedAs = 'user';
 
-    return authToken;
+      return authToken;
+    } catch (error: any) {
+      throw new Error(
+        `User authentication failed: ${
+          error.response?.data?.message || error.message
+        }`,
+      );
+    }
   }
 
   /**
-   * Works mostly the same way as `CaishenSDK` and issues authorization token for Caishen API
+   * Works mostly the same way as `CaishenSDK` and issues an authorization token for Caishen API
    * without storing it into the current class instance.
    * @param payload
    */
@@ -123,7 +149,7 @@ export class CaishenSDK {
       return authToken;
     } catch (error: any) {
       throw new Error(
-        `User authentication failed: ${
+        `Authentication failed: ${
           error.response?.data?.message || error.message
         }`,
       );

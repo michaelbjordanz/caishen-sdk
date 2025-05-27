@@ -119,7 +119,11 @@ jwt.verify(token, projectSecret); // -> { id: string }
 ### Issue authorization token
 
 Simple way to issue an authorization token for the Caishen API without storing it in the CaishenSDK instance.
-Useful primarily for authorizing multiple users independently on your back-end side.
+
+As because you cannot call `connectAsUser` or `connectAsAgent` twice, this method provides you an ability to get authorization token (of a user or agent) based on your credentials.
+
+Useful primarily for authorizing multiple users independently on your back-end side and managing it without.
+
 
 ##### Example:
 ```ts
@@ -141,6 +145,84 @@ const balance = await sdk.crypto.getBalance({
 console.log(`Balance ETH: ${balance}`)
 ```
 
+Here is a basic real-world example of how you can use it:
+```ts
+// Create a global SDK instance with project key provided
+const caishenSDK = new CaisenSDK({ projectKey });
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+  constructor(private jwtService: JwtService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromHeader(request);
+
+    if (!token) {
+      throw new UnauthorizedException('Missing JWT token');
+    }
+
+    try {
+      // Verify main JWT token
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret,
+      });
+
+      // Extract and verify the encrypted Caishen auth token from payload
+      const encryptedCaishenToken = payload.caishenAuthTokenEncrypted;
+
+      let decryptedCaishenToken = await this.jwtService.verifyAsync(
+        encryptedCaishenToken,
+        {
+          secret: jwtConstants.caishenSecret,
+        },
+      );
+
+      // Optional: validate token expiration or structure
+      
+      if (!decryptedCaishenToken) {
+        // Fallback: generate a new token via SDK if decryption fails
+        decryptedCaishenToken = await caishenSDK.issueAuthToken({
+          provider: 'custom',
+          token: payload.userId, // Replace with actual user ID if available
+          connectAs: 'user',
+        });
+      }
+
+      // Attach the decrypted token to the request for later use
+      request.caishenAuthTokenDecrypted = decryptedCaishenToken;
+
+      return true;
+    } catch (error) {
+      console.error('AuthGuard error:', error);
+      throw new UnauthorizedException('Invalid token or authorization failed');
+    }
+  }
+
+  // Extracts JWT token from Authorization header
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
+}
+
+@Controller('my-api')
+export class MyApiController {
+  constructor(private readonly caishenSDK: CaisenSDK) {}
+
+  @UseGuards(AuthGuard)
+  @Get('balance')
+  async getMyBalance(@Request() req) {
+    const caishenUserAuthToken = req.caishenAuthTokenDecrypted;
+    const balance = await this.caishenSDK.crypto.getBalance({
+      wallet: { account: 1, chainType: ChainType.SUI },
+      authToken: caishenUserAuthToken,
+    });
+
+    return balance;
+  }
+}
+```
 
 ### Connect as Agent
 
