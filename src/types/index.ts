@@ -1,4 +1,6 @@
 import { ChainType } from '../constants';
+import { Token } from '../cash/schema';
+import { Method } from 'axios';
 
 export type BaseRequest<Wallet, Payload> = {
   wallet: Wallet;
@@ -20,23 +22,19 @@ export interface InitCaishenSDK {
   projectKey: string;
 }
 
-export interface ConnectAsPayload {
-  /**
-   * Determines whether to store authorization token inside CaishenSDK class or not.
-   * Defaults to `true`.
-   */
-  storeAuthToken?: boolean;
-}
-
-export interface ConnectAsAgentPayload extends ConnectAsPayload {
+export interface ConnectAsAgentPayload {
   agentId?: string;
   userId?: string;
 }
 
-export interface ConnectAsUserPayload extends ConnectAsPayload {
+export interface ConnectAsUserPayload {
   provider?: string | 'custom';
   token: string;
 }
+
+export type IssueAuthTokenPayload =
+  | ConnectAsUserPayload & { connectAs: 'user' }
+  | ConnectAsAgentPayload & { connectAs: 'agent' }
 
 export interface SendTransactionPayload {
   /**
@@ -61,8 +59,6 @@ export interface SignAndSendPayload {
    */
   serializedTransaction: string;
 }
-
-import { Token } from '../cash/schema';
 
 type TokenWithPrice = Token & {
   priceUSD: string;
@@ -125,4 +121,13 @@ export interface GetSwapPayload {
     chainType: ChainType;
     chainId?: number;
   };
+}
+
+export interface InvokeTool {
+  tool: string;
+  method: Method;
+  route: string;
+  query?: Record<string, any>;
+  headers?: Record<string, string>;
+  body?: Record<string, any>;
 }

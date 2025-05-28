@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const CryptoSendSchema = z.object({
-  address: z.string().describe('The wallet address to send from'),
   chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
   chainId: z.number().optional().describe('The chain ID for the blockchain'),
   account: z.number().describe('The account number'),
@@ -15,15 +14,19 @@ export const CryptoSendSchema = z.object({
 });
 
 export const CryptoSignAndSendSchema = z.object({
-  address: z.string().describe('The wallet address to send from'),
   chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
   chainId: z.number().optional().describe('The chain ID for the blockchain'),
   account: z.number().describe('The account number'),
   serializedTransaction: z.string().describe('Serialized transaction into Hex format'),
 });
 
+export const CryptoSignSchema = z.object({
+  chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
+  account: z.number().describe('The account number'),
+  transactionData: z.string().describe(' Either serialized transaction or any transaction data to issue signature.'),
+});
+
 export const CryptoGetBalanceSchema = z.object({
-  address: z.string().describe('The wallet address to check balance for'),
   chainType: z.string().describe('The blockchain type (e.g., "EVM", "SOLANA")'),
   chainId: z.number().optional().describe('The chain ID for the blockchain'),
   publicKey: z.string().optional().describe('The public key of the wallet'),
