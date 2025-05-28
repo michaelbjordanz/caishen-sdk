@@ -8,10 +8,10 @@ import {
 import {
   CryptoGetBalanceSchema,
   CryptoGetSwapRouteSchema,
-  CryptoSendSchema, CryptoSignAndSendSchema,
+  CryptoSendSchema, CryptoSignAndSendSchema, CryptoSignSchema,
   CryptoSwapSchema,
 } from '../schema/schema';
-import { toolBase } from './ToolBase';
+import { toolBase } from './tool-base';
 import { ChainType } from '../constants';
 import { Tools } from './interfaces';
 
@@ -109,7 +109,6 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
       parameters: CryptoGetBalanceSchema,
       execute: async (params) => {
         const wallet = {
-          address: params.address,
           chainType: params.chainType,
           chainId: params.chainId,
           publicKey: params.publicKey,
@@ -119,8 +118,8 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
           token: params.token,
         };
 
-        if (!wallet || !wallet.address || !wallet.chainType) {
-          throw new Error('wallet.address and wallet.chainType are required');
+        if (!wallet || !wallet.chainType) {
+          throw new Error('wallet.chainType are required');
         }
 
         return await sdk.crypto.getBalance({
@@ -151,7 +150,6 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
       parameters: CryptoSendSchema,
       execute: async (params) => {
         const wallet = {
-          address: params.address,
           chainType: params.chainType,
           chainId: params.chainId,
           account: params.account,
@@ -163,8 +161,8 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
           memo: params.memo,
         };
 
-        if (!wallet || !wallet.address || !wallet.chainType) {
-          throw new Error('wallet.address and wallet.chainType are required');
+        if (!wallet || !wallet.chainType) {
+          throw new Error('wallet.chainType are required');
         }
         if (!payload || !payload.toAddress || !payload.amount) {
           throw new Error('payload.toAddress and payload.amount are required');
@@ -178,8 +176,8 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
     }),
 
     sign_and_send: toolBase({
-      name: 'send_crypto',
-      description: `Signs transaction and broadcasts crypto transaction to a network.
+      name: 'sign_and_send',
+      description: `Signs and broadcasts crypto transaction to a network.
   
       Inputs (JSON string):
       - wallet: object
@@ -195,7 +193,6 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
       parameters: CryptoSignAndSendSchema,
       execute: async (params) => {
         const wallet = {
-          address: params.address,
           chainType: params.chainType,
           chainId: params.chainId,
           account: params.account,
@@ -204,14 +201,53 @@ export function getTools({ sdk }: { sdk: CaishenSDK }): Tools {
           serializedTransaction: params.serializedTransaction,
         };
 
-        if (!wallet || !wallet.address || !wallet.chainType) {
-          throw new Error('wallet.address and wallet.chainType are required');
+        if (!wallet || !wallet.chainType) {
+          throw new Error('wallet.chainType are required');
         }
         if (!payload || !payload.serializedTransaction) {
           throw new Error('payload.serializedTransaction is required');
         }
 
         return await sdk.crypto.signAndSend({
+          wallet,
+          payload,
+        });
+      },
+    }),
+
+    sign: toolBase({
+      name: 'signs',
+      description: `Signs transaction without broadcasting to a network.
+  
+      Inputs (JSON string):
+      - wallet: object
+        - address: string (required)
+        - chainType: string (required, e.g., "ETHEREUM", "SOLANA")
+        - chainId: number (optional)
+        - publicKey: string (optional)
+        - account: number (optional)
+      - payload: object
+        - serializedTransaction: string (required) — Serialized transaction (e.g. with [serializeTransaction]{@link https://viem.sh/docs/utilities/serializeTransaction.html}) - Hex
+
+    Returns the transaction signature as a string.`,
+      parameters: CryptoSignSchema,
+      execute: async (params) => {
+        const wallet = {
+          chainType: params.chainType,
+          account: params.account,
+        };
+        const payload = {
+          transactionData: params.transactionData,
+        };
+
+        if (!wallet || !wallet.chainType) {
+          throw new Error('wallet.chainType are required');
+        }
+        if (!payload || !payload.transactionData) {
+          throw new Error('payload.serializedTransaction is required');
+        }
+
+        return await sdk.crypto.sign({
           wallet,
           payload,
         });
