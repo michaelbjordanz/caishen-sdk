@@ -352,6 +352,16 @@ const transactionHash = await sdk.crypto.signAndSend({
 });
 ```
 
+> NOTE: You can provide your custom URL API endpoint to fetch UTXOs for BTC-based chains like BTC, LTC, etc.
+> Pass `utxoUrl` parameter as an option. The endpoint MUST return an array structure like
+> ```
+> Array<{
+>  vout: number;
+>  value: number; // satoshi
+>  txId: string;
+> }>
+> ```
+
 ### ✍️ Sign transaction
 
 ```ts
