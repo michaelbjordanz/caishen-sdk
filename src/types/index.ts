@@ -102,7 +102,7 @@ export interface WalletAccount {
    * ```
    * Array<{
    *   vout: number;
-   *   value: number;
+   *   value: number; // satoshi
    *   txId: string;
    * }>
    * ```

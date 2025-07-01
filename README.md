@@ -357,7 +357,7 @@ const transactionHash = await sdk.crypto.signAndSend({
 > ```
 > Array<{
 >  vout: number;
->  value: number;
+>  value: number; // satoshi
 >  txId: string;
 > }>
 > ```
