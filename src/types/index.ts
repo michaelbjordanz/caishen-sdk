@@ -95,6 +95,19 @@ export interface WalletAccount {
   chainType: string;
   chainId?: number;
   rpc?: string;
+  /**
+   * Your custom URL API endpoint to fetch UTXOs for BTC-based chains like BTC, LTC, etc.
+   * The endpoint MUST return an array structure like
+   *
+   * ```
+   * Array<{
+   *   vout: number;
+   *   value: number;
+   *   txId: string;
+   * }>
+   * ```
+   */
+  utxoUrl?: string;
 }
 
 export interface WalletInfo {
